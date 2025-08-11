@@ -80,7 +80,7 @@ export async function action({ request }: ActionFunctionArgs) {
     }, { status: 201 });
     
   } catch (error) {
-    return json({ error: 'Sign up error' }, { status: 500 });
+    return json({ error: 'Sign up failed. Internet error!' }, { status: 500 });
   }
 }
 

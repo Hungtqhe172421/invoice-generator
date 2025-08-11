@@ -53,9 +53,11 @@ export async function action({ request }: ActionFunctionArgs) {
         'Set-Cookie': `token=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60}; SameSite=Lax`
       }
     });
-  } catch (error) {
-    return json({ error: 'An error occurred during sign in' }, { status: 500 });
-  }
+} catch (error) {
+  console.error("Sign in error:", error); 
+  return json({ error: 'An error occurred during sign in' }, { status: 500 });
+}
+
 }
 
 
