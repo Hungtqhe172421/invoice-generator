@@ -398,7 +398,7 @@ export function generateClassicHTML(formData: InvoiceData, items: InvoiceItem[])
           </tr>
           ${formData.discountAmount > 0 ? `
             <tr>
-              <td class="label-col">DISCOUNT (${formData.discountType === 'Percentage' ? `${formData.discountValue}%` : '100%'})</td>
+              <td class="label-col">DISCOUNT (${formData.discountType === 'Percentage' ? `${formData.discountValue}%` : ''})</td>
               <td class="amount-col" >-${formatCurrency(formData.discountAmount, formData.currency)}</td>
             </tr>
           ` : ''}
@@ -686,7 +686,7 @@ export function generateSharpHTML(formData: InvoiceData, items: InvoiceItem[]): 
       </tr>
          ${formData.discountAmount > 0 ? `
             <tr>
-              <td class="label-col">DISCOUNT (${formData.discountType === 'Percentage' ? `${formData.discountValue}%` : '100%'})</td>
+              <td class="label-col">DISCOUNT (${formData.discountType === 'Percentage' ? `${formData.discountValue}%` : ''})</td>
               <td class="amount-col" >-${formatCurrency(formData.discountAmount, formData.currency)}</td>
             </tr>
           ` : ''}
@@ -968,7 +968,7 @@ function generateCleanHTML(formData: InvoiceData, items: InvoiceItem[]): string 
       </tr>
          ${formData.discountAmount > 0 ? `
             <tr>
-              <td class="label-col">DISCOUNT (${formData.discountType === 'Percentage' ? `${formData.discountValue}%` : '100%'})</td>
+              <td class="label-col">DISCOUNT (${formData.discountType === 'Percentage' ? `${formData.discountValue}%` : ''})</td>
               <td class="amount-col" >-${formatCurrency(formData.discountAmount, formData.currency)}</td>
             </tr>
           ` : ''}
