@@ -59,7 +59,7 @@ const user = getUserFromRequest(request);
     
     await user.save();
 
-    sendWelcomeEmail(user.email, user.username).catch(console.error);
+    await sendWelcomeEmail(user.email, user.username).catch(console.error);
 
     return json({ 
       success: true, 
