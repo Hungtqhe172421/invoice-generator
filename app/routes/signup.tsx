@@ -71,7 +71,7 @@ export async function action({ request }: ActionFunctionArgs) {
     
     await newUser.save();
 
-    sendVerificationEmail(email, username, verificationToken).catch(console.error);
+    await sendVerificationEmail(email, username, verificationToken).catch(console.error);
 
     return json({ 
       success: true, 
