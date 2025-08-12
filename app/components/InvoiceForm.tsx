@@ -584,10 +584,7 @@ export default function InvoiceForm({ initialData }: InvoiceFormProps) {
                     {formData.discountType !== 'None' && (
                       <div className="flex justify-between">
                         <span className="text-gray-600">
-                          Discount {formData.discountType === 'Percentage' 
-            ? `(${Number(formData.discountValue).toFixed(1)}%)` 
-            : ''
-          }
+                          Discount {formData.discountType === 'Percentage' ? `(${formData.discountValue}%)` : ''}
                         </span>
                         <span className="text-gray-900">-{formatCurrency(Number(discountAmount), formData.currency)}</span>
                       </div>
