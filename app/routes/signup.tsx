@@ -86,6 +86,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function SignUp() {
   const actionData = useActionData<typeof action>();
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
 
 if (actionData && 'success' in actionData && actionData.success) {
     return (
@@ -190,12 +192,13 @@ if (actionData && 'success' in actionData && actionData.success) {
           )}
 
           <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-            >
-              Sign up
-            </button>
+<button
+    type="submit"
+    disabled={isSubmitting}
+    className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+  >
+    {isSubmitting ? "Signing up..." : "Sign up"}
+  </button>
           </div>
 
           <div className="text-center">

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Form, useActionData, useNavigate, useSubmit } from '@remix-run/react';
+import { Form, useActionData, useNavigate, useNavigation, useSubmit } from '@remix-run/react';
 import ColorPicker from '../components/ColorPicker';
 import TaxSelector from '../components/TaxSelector';
 import DiscountSelector from '../components/DiscountSelector';
@@ -70,6 +70,8 @@ export default function InvoiceForm({ initialData }: InvoiceFormProps) {
     message: string;
   }>({ type: null, message: '' });
   const actionData = useActionData<{ success: boolean; error?: string }>();
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
 
   useEffect(() => {
     if (actionData?.success) {
@@ -249,10 +251,9 @@ export default function InvoiceForm({ initialData }: InvoiceFormProps) {
               <button
                 className="px-4 py-2 bg-blue-600 font-medium text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                 type="submit"
+                disabled={isSubmitting}
                 form="invoice-form">
-
-                Save Invoice
-
+{isSubmitting ? "Saving ..." : "Save Invoice"}
               </button>
             </div>
           </div>

@@ -53,17 +53,18 @@ export async function action({ request }: ActionFunctionArgs) {
         'Set-Cookie': `token=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60}; SameSite=Lax`
       }
     });
-} catch (error) {
-  console.error("Sign in error:", error); 
-  return json({ error: 'An error occurred during sign in' }, { status: 500 });
-}
+  } catch (error) {
+    console.error("Sign in error:", error);
+    return json({ error: 'An error occurred during sign in' }, { status: 500 });
+  }
 
 }
 
 
 export default function SignIn() {
   const actionData = useActionData<typeof action>();
-
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -114,9 +115,10 @@ export default function SignIn() {
           <div>
             <button
               type="submit"
+              disabled={isSubmitting}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
             >
-              Sign in
+              {isSubmitting ? "Signing in..." : "Sign in"}
             </button>
           </div>
 

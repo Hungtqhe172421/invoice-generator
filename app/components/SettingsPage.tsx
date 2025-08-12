@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form, useActionData, useSubmit } from '@remix-run/react';
+import { Form, useActionData, useNavigation, useSubmit } from '@remix-run/react';
 import SignatureDrawer from './SignatureDrawer';
 import ColorPicker from './ColorPicker';
 import TaxSelector from './TaxSelector';
@@ -13,6 +13,8 @@ interface SettingsFormProps {
 
 export default function SettingsPage({ initialData }: SettingsFormProps) {
   const submit = useSubmit();
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state === "submitting";
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const actionData = useActionData<{ success: boolean; error?: string; invoice?: Settings }>();
@@ -115,9 +117,10 @@ export default function SettingsPage({ initialData }: SettingsFormProps) {
               <button
                 className="px-4 py-2 bg-blue-600 font-medium text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                 type="submit"
+                disabled={isSubmitting}
                 form="settings-form"
               >
-                Save Invoice
+{isSubmitting ? "Saving ..." : "Save Invoice"}
               </button>
             </div>
           </div>
