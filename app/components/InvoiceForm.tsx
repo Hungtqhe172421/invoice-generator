@@ -71,7 +71,7 @@ export default function InvoiceForm({ initialData }: InvoiceFormProps) {
   }>({ type: null, message: '' });
   const actionData = useActionData<{ success: boolean; error?: string }>();
   const navigation = useNavigation();
-  const isSubmitting = navigation.state === "submitting";
+const isSubmitting = navigation.state !== "idle";
 
   useEffect(() => {
     if (actionData?.success) {

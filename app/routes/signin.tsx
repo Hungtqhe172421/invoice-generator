@@ -64,7 +64,7 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function SignIn() {
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
-  const isSubmitting = navigation.state === "submitting";
+const isSubmitting = navigation.state !== "idle";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
