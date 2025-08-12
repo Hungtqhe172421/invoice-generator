@@ -15,6 +15,7 @@
     "@remix-run/node": "^2.17.0",
     "@remix-run/react": "^2.17.0",
     "@remix-run/serve": "^2.16.8",
+    "@sendgrid/mail": "^8.1.5",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "html2canvas": "^1.4.1",
@@ -29,7 +30,8 @@
     "puppeteer": "^24.14.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-signature-canvas": "^1.1.0-alpha.2"
+    "react-signature-canvas": "^1.1.0-alpha.2",
+    "resend": "^6.0.1"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.16.8",
