@@ -24,7 +24,7 @@ export async function action({ request }: ActionFunctionArgs) {
   try {
     await connectToDatabase();
 
-    const user = await User.findOne({ email, isActive: true });
+    const user = await User.findOne({ email});
     if (!user) {
       return json({ error: 'Invalid account' }, { status: 401 });
     }
@@ -37,10 +37,12 @@ export async function action({ request }: ActionFunctionArgs) {
 
     if (!user.isEmailVerified) {
       return json({
-        error: 'Please verify your email address before signing in',
-        needsVerification: true,
-        email: user.email
+        error: 'Please verify your email address before signing in'
       }, { status: 403 });
+    }
+
+     if (!user.isActive) {
+      return json({ error: 'Your account has been deactivated.' }, { status: 401 });
     }
 
     user.lastLogin = new Date();
@@ -64,7 +66,7 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function SignIn() {
   const actionData = useActionData<typeof action>();
   const navigation = useNavigation();
-const isSubmitting = navigation.state !== "idle";
+  const isSubmitting = navigation.state !== "idle";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">

@@ -1,6 +1,9 @@
+import { useEffect } from "react";
+
 interface DiscountSelectorProps {
   discountType: string;
   discountValue: number;
+  subtotal: number;
   onDiscountTypeChange: (type: string) => void;
   onDiscountValueChange: (value: number) => void;
 }
@@ -14,9 +17,17 @@ const discountOptions = [
 export default function DiscountSelector({
   discountType,
   discountValue,
+  subtotal,
   onDiscountTypeChange,
   onDiscountValueChange
 }: DiscountSelectorProps) {
+
+  useEffect(() => {
+    if (discountType === 'Fixed Amount' && discountValue > subtotal) {
+      onDiscountValueChange(subtotal);
+    }
+  }, [subtotal, discountValue, onDiscountValueChange]);
+
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium text-gray-700 border-b border-gray-300 pb-1">
@@ -55,6 +66,9 @@ export default function DiscountSelector({
                 if (discountType === 'Percentage') {
                   if (value < 0) value = 0;
                   if (value > 100) value = 100;
+                } else if (discountType === 'Fixed Amount') {
+                  if (value < 0) value = 0;
+                  if (value > subtotal) value = subtotal;
                 }
                 onDiscountValueChange(isNaN(value) ? 0 : value);
               }}

@@ -78,8 +78,7 @@ try {
       );
       return json({
         success: true,
-        invoice: newInvoice,
-        message: 'Invoice created successfully'
+        invoice: newInvoice
       });
     } catch (err) {
       const error = err as Error;

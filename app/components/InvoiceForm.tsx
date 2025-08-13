@@ -71,7 +71,7 @@ export default function InvoiceForm({ initialData }: InvoiceFormProps) {
   }>({ type: null, message: '' });
   const actionData = useActionData<{ success: boolean; error?: string }>();
   const navigation = useNavigation();
-const isSubmitting = navigation.state !== "idle";
+  const isSubmitting = navigation.state !== "idle";
 
   useEffect(() => {
     if (actionData?.success) {
@@ -120,8 +120,6 @@ const isSubmitting = navigation.state !== "idle";
   const total = Math.max(subtotalAfterDiscount + taxAmount, 0);
 
 
-
-
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -137,8 +135,13 @@ const isSubmitting = navigation.state !== "idle";
   };
 
   const addItem = () => {
+    if (items.length >= 50) {
+      alert('Maximum 50 items allowed');
+      return;
+    }
     setItems([...items, { description: '', additionalDetails: '', rate: 0, quantity: 1, amount: 0, taxable: true }]);
   };
+
 
   const removeItem = (index: number) => {
     if (items.length > 1) {
@@ -253,7 +256,7 @@ const isSubmitting = navigation.state !== "idle";
                 type="submit"
                 disabled={isSubmitting}
                 form="invoice-form">
-{isSubmitting ? "Saving ..." : "Save Invoice"}
+                Save Invoice
               </button>
             </div>
           </div>
@@ -268,6 +271,7 @@ const isSubmitting = navigation.state !== "idle";
                       name="invoice"
                       value={formData.title}
                       onChange={(e) => handleInputChange('title', e.target.value)}
+                      maxLength={50}
                       className="text-xl w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Invoice"
                       required
@@ -305,6 +309,7 @@ const isSubmitting = navigation.state !== "idle";
                         type="text"
                         name="fromName"
                         value={formData.fromName}
+                        maxLength={50}
                         onChange={(e) => handleInputChange('fromName', e.target.value)}
                         required
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -319,7 +324,7 @@ const isSubmitting = navigation.state !== "idle";
                         name="fromEmail"
                         value={formData.fromEmail}
                         onChange={(e) => handleInputChange('fromEmail', e.target.value)}
-
+                        maxLength={50}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="name@business.com"
                       />
@@ -330,6 +335,7 @@ const isSubmitting = navigation.state !== "idle";
                         type="text"
                         name="fromAddress"
                         value={formData.fromAddress}
+                        maxLength={50}
                         onChange={(e) => handleInputChange('fromAddress', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Street"
@@ -341,6 +347,7 @@ const isSubmitting = navigation.state !== "idle";
                         type="tel"
                         name="fromPhone"
                         value={formData.fromPhone}
+                        maxLength={50}
                         onChange={(e) => handleInputChange('fromPhone', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="(123) 456 789"
@@ -352,6 +359,7 @@ const isSubmitting = navigation.state !== "idle";
                         type="text"
                         name="businessNumber"
                         value={formData.businessNumber}
+                        maxLength={50}
                         onChange={(e) => handleInputChange('businessNumber', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="123-45-6789"
@@ -368,6 +376,7 @@ const isSubmitting = navigation.state !== "idle";
                         type="text"
                         name="billToName"
                         value={formData.billToName}
+                        maxLength={50}
                         onChange={(e) => handleInputChange('billToName', e.target.value)}
                         required
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -380,6 +389,7 @@ const isSubmitting = navigation.state !== "idle";
                         type="email"
                         name="billToEmail"
                         value={formData.billToEmail}
+                        maxLength={50}
                         onChange={(e) => handleInputChange('billToEmail', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="name@client.com"
@@ -391,6 +401,7 @@ const isSubmitting = navigation.state !== "idle";
                         type="text"
                         name="billToAddress"
                         value={formData.billToAddress}
+                        maxLength={50}
                         onChange={(e) => handleInputChange('billToAddress', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Street"
@@ -402,6 +413,7 @@ const isSubmitting = navigation.state !== "idle";
                         type="tel"
                         name="billToPhone"
                         value={formData.billToPhone}
+                        maxLength={50}
                         onChange={(e) => handleInputChange('billToPhone', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="(123) 456 789"
@@ -413,6 +425,7 @@ const isSubmitting = navigation.state !== "idle";
                         type="tel"
                         name="billToMobile"
                         value={formData.billToMobile}
+                        maxLength={50}
                         onChange={(e) => handleInputChange('billToMobile', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="(123) 456 789"
@@ -424,6 +437,7 @@ const isSubmitting = navigation.state !== "idle";
                         type="tel"
                         name="billToFax"
                         value={formData.billToFax}
+                        maxLength={50}
                         onChange={(e) => handleInputChange('billToFax', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="(123) 456 789"
@@ -440,6 +454,7 @@ const isSubmitting = navigation.state !== "idle";
                         type="text"
                         name="invoiceNumber"
                         value={formData.invoiceNumber}
+                        maxLength={50}
                         onChange={(e) => handleInputChange('invoiceNumber', e.target.value)}
                         required
                         readOnly={!!initialData?.invoiceNumber}
@@ -503,6 +518,7 @@ const isSubmitting = navigation.state !== "idle";
                                     type="text"
                                     value={item.description}
                                     onChange={(e) => handleItemChange(index, 'description', e.target.value)}
+                                    maxLength={50}
                                     className="flex-1 px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="Item Description"
                                     required
@@ -511,6 +527,7 @@ const isSubmitting = navigation.state !== "idle";
                                 <textarea
                                   value={item.additionalDetails}
                                   onChange={(e) => handleItemChange(index, 'additionalDetails', e.target.value)}
+                                  maxLength={50}
                                   className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                                   placeholder="Additional details"
                                   rows={2}
@@ -534,8 +551,11 @@ const isSubmitting = navigation.state !== "idle";
                                 type="number"
                                 value={item.rate}
                                 onChange={(e) => {
-                                  const value = parseFloat(e.target.value);
-                                  handleItemChange(index, 'rate', isNaN(value) || value < 0 ? 0 : value);
+                                  let value = parseFloat(e.target.value);
+                                  if (isNaN(value)) value = 0;
+                                  if (value < 0) value = 0;
+                                  if (value > 1000000000000) value = 1000000000000;
+                                  handleItemChange(index, 'rate', value);
                                 }}
                                 className="w-20 px-2 py-2 border bg-white text-black border-gray-300 rounded-md text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="0.00"
@@ -547,8 +567,11 @@ const isSubmitting = navigation.state !== "idle";
                                 type="number"
                                 value={item.quantity}
                                 onChange={(e) => {
-                                  const value = parseFloat(e.target.value);
-                                  handleItemChange(index, 'quantity', isNaN(value) || value < 0 ? 0 : value);
+                                  let value = parseInt(e.target.value);
+                                  if (isNaN(value)) value = 1;
+                                  if (value < 1) value = 1;
+                                  if (value > 999) value = 999
+                                  handleItemChange(index, 'quantity', value);
                                 }}
                                 className="w-16 px-2 py-2 border bg-white text-black border-gray-300 rounded-md text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 placeholder="1"
@@ -615,6 +638,7 @@ const isSubmitting = navigation.state !== "idle";
                     name="notes"
                     value={formData.notes}
                     onChange={(e) => handleInputChange('notes', e.target.value)}
+                    maxLength={200}
                     className="w-full px-3 py-4 border border-gray-300 rounded-md"
                     style={{ backgroundColor: '#ffffff', color: '#000000' }}
                     placeholder="Notes - any relevant information not covered, additional terms and conditions"
@@ -648,6 +672,7 @@ const isSubmitting = navigation.state !== "idle";
                 <DiscountSelector
                   discountType={formData.discountType ?? ''}
                   discountValue={Number(formData.discountValue) || 0}
+                  subtotal={subtotal}
                   onDiscountTypeChange={(type) => handleInputChange('discountType', type)}
                   onDiscountValueChange={(value) => handleInputChange('discountValue', value.toString())}
                 />
@@ -664,9 +689,7 @@ const isSubmitting = navigation.state !== "idle";
                 onTemplateChange={(template) => handleInputChange('template', template)}
               />
             </div>
-
           </Form>
-
         </div>
       </div>
     </div>

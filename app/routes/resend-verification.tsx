@@ -23,16 +23,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const email = formData.get('email') as string;
-
-  if (!email) {
-    return json({ error: 'Email is required' }, { status: 400 });
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return json({ error: 'Please enter a valid email address' }, { status: 400 });
-  }
-
   try {
     await connectToDatabase();
     
@@ -74,7 +64,6 @@ export async function action({ request }: ActionFunctionArgs) {
       success: true, 
       message: 'Verification email sent successfully!',
       email: user.email,
-      username: user.username
     });
 
   } catch (error) {
@@ -86,8 +75,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function ResendVerification() {
   const actionData = useActionData<typeof action>();
-  const [searchParams] = useSearchParams();
-  const emailFromUrl = searchParams.get('email') || '';
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state == "submitting";
 
   if (actionData && 'success' in actionData) {
     return (
@@ -105,12 +94,6 @@ export default function ResendVerification() {
                 Sent to: <strong>{actionData.email}</strong>
               </p>
             )}
-            {actionData && 'username' in actionData && (
-              <p className="mt-2 text-center text-sm text-gray-500">
-                Account: {actionData.username}
-              </p>
-            )}
-
             <div className="mt-6 space-y-3">
               <Link
                 to="/signin"
@@ -148,7 +131,6 @@ export default function ResendVerification() {
               type="email"
               autoComplete="email"
               required
-              defaultValue={emailFromUrl}
               className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
               placeholder="Enter your email address"
             />
@@ -159,7 +141,7 @@ export default function ResendVerification() {
               <div className="flex">
                 <div className="ml-3">
                   <h3 className="text-sm font-medium text-red-800">
-                    {(actionData && 'alreadyVerified' in actionData)? 'Email Already Verified' : 'Error'}
+                    {(actionData && 'alreadyVerified' in actionData)? 'Email Already Verified' : 'Error sending mail'}
                   </h3>
                   <div className="mt-2 text-sm text-red-700">
                     {actionData.error}
@@ -183,8 +165,9 @@ export default function ResendVerification() {
             <button
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+               disabled={isSubmitting}
             >
-              Send Verification Email
+              {isSubmitting ? "Sending ..." : "Send Verification Email"}
             </button>
           </div>
 

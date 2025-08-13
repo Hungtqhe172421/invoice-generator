@@ -72,7 +72,8 @@ export default function ResetPassword() {
   const actionData = useActionData<typeof action>();
   const [showStatus, setShowStatus] = useState(false);
   const location = useLocation();
-
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state == "submitting";
   useEffect(() => {
     if (location.state?.message) {
       setShowStatus(true);
@@ -207,10 +208,10 @@ export default function ResetPassword() {
           <div>
             <button
               type="submit"
-
+              disabled={isSubmitting}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
             >
-              Reset Password
+              {isSubmitting ? "Changing ..." : "Reset Password"}
             </button>
           </div>
 

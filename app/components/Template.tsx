@@ -640,7 +640,7 @@ export function generateSharpHTML(formData: InvoiceData, items: InvoiceItem[]): 
     </div>
     <div class="right-meta">
       <div><strong>Date</strong><br>${new Date(formData.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
-      <div><strong>Due</strong><br>On Receipt</div>
+      <div><strong>Due</strong><br>${formData.terms}</div>
       <div><strong>Balance Due</strong><br>${formatCurrency(formData.total, formData.currency)}</div>
     </div>
   </div>
@@ -908,7 +908,7 @@ function generateCleanHTML(formData: InvoiceData, items: InvoiceItem[]): string 
 
   <div class="right-meta">
     <div><strong>Date</strong><br>${new Date(formData.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
-    <div><strong>Due</strong><br>On Receipt</div>
+    <div><strong>Due</strong><br>${formData.terms}</div>
     <div><strong>Balance Due</strong><br>${formatCurrency(formData.total, formData.currency)}</div>
   </div>
 </div>

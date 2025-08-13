@@ -100,8 +100,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       
       return json({ 
         success: true, 
-        invoice: updatedInvoice,
-        message: 'Invoice updated successfully'
+        invoice: updatedInvoice
       });
     } catch (error) {
       return json({ 

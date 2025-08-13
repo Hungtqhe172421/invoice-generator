@@ -29,8 +29,7 @@ export async function action({ request }: ActionFunctionArgs) {
     
     if (!user) {
       return json({ 
-        success: true, 
-        message: 'We have sent a password reset code.' 
+        success: true
       });
     }
 
@@ -44,8 +43,7 @@ export async function action({ request }: ActionFunctionArgs) {
     }
 
     return json({ 
-      success: true, 
-      message: 'Password reset code sent to your email address.' 
+      success: true
     });
   } catch (error) {
     return json({ error: 'Forgot password error.' }, { status: 500 });
@@ -55,7 +53,8 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function ForgotPassword() {
   const actionData = useActionData<typeof action>();
   const navigate = useNavigate();
-  
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state !== "idle";
 useEffect(() => {
   if (actionData && 'success' in actionData && actionData.success) {
     navigate('/reset-password', {
@@ -102,18 +101,13 @@ useEffect(() => {
             </div>
           )}
 
-          {actionData && 'success' in actionData && (
-            <div className="text-green-600 text-sm text-center">
-              {actionData.message}
-            </div>
-          )}
-
           <div>
             <button
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              disabled={isSubmitting}
             >
-              Send Reset Code
+              {isSubmitting ? "Sending..." : "Send Reset Code"}
             </button>
           </div>
 

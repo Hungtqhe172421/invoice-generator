@@ -78,7 +78,8 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export default function Profile() {
   const actionData = useActionData<typeof action>();
-
+  const navigation = useNavigation();
+  const isSubmitting = navigation.state == "submitting";
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -139,8 +140,9 @@ export default function Profile() {
             <button
               type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+              disabled={isSubmitting}
             >
-           Change Password
+             {isSubmitting ? "Changing ..." : "Change Password"}
             </button>
           </Form>
         </div>
