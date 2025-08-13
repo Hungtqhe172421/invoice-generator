@@ -56,6 +56,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const [invoices, totalInvoices] = await Promise.all([
     Invoice.find(query)
+      .select("invoiceNumber title fromName billToName total currency createdAt updatedAt")
       .sort(sortObj)
       .limit(limit)
       .skip((page - 1) * limit),
@@ -226,8 +227,8 @@ export default function InvoiceManagement() {
 
       {showStatus && location.state?.message && (
         <div className={`mb-4 p-4 rounded-md ${location.state.type === 'success'
-            ? 'bg-green-50 border border-green-200 text-green-800'
-            : 'bg-red-50 border border-red-200 text-red-800'
+          ? 'bg-green-50 border border-green-200 text-green-800'
+          : 'bg-red-50 border border-red-200 text-red-800'
           }`}>
           <div className="flex justify-between items-center">
             <span className="font-medium">{location.state.message}</span>
@@ -326,13 +327,13 @@ export default function InvoiceManagement() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div>
-                        <button
-                          onClick={() => generatePDF(invoice)}
+                        <Link
+                          to={`/invoice/${invoice._id}`}
+                          target="_blank"
                           className="inline text-sm font-medium text-indigo-600 hover:text-indigo-900"
-                          title="View Invoice PDF"
                         >
                           {invoice.invoiceNumber}
-                        </button>
+                        </Link>
                       </div>
                     </div>
                   </td>

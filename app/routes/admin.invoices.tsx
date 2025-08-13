@@ -8,9 +8,9 @@ import { invoiceTemplates } from '~/components/Template';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const authUser = getUserFromRequest(request);
-    if (!authUser || authUser.role !== 'admin') {
-        return redirect('/');
-    }
+  if (!authUser || authUser.role !== 'admin') {
+    return redirect('/');
+  }
   const url = new URL(request.url);
   const page = parseInt(url.searchParams.get('page') || '1');
   const limit = 10;
@@ -50,6 +50,19 @@ export async function loader({ request }: LoaderFunctionArgs) {
     {
       $addFields: {
         username: '$userInfo.username'
+      }
+    },
+    {
+      $project: {
+        invoiceNumber: 1,
+        username: 1,
+        title: 1,
+        fromName: 1,
+        billToName: 1,
+        total: 1,
+        currency: 1,
+        createdAt: 1,
+        updatedAt: 1
       }
     },
     {
@@ -113,34 +126,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function InvoiceManagement() {
   const { invoices, pagination, filters, sorting } = useLoaderData<typeof loader>();
   const [jumpPage, setJumpPage] = useState('');
-
-  const generatePDF = async (invoice: InvoiceData) => {
-    try {
-      const printWindow = window.open('Invoice', '_blank');
-      if (!printWindow) {
-        return;
-      }
-
-      const template = invoiceTemplates.find(t => t.name === invoice.template);
-      if (!template) {
-        console.error('Template not found:', invoice.template);
-        printWindow.close();
-        return;
-      }
-
-      const invoiceHTML = template.generateHTML(invoice, invoice.items);
-      printWindow.document.write(invoiceHTML);
-      printWindow.document.close();
-
-      printWindow.onload = () => {
-        printWindow.focus();
-        printWindow.print();
-      };
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    }
-  };
-
 
   const getSortIcon = (column: string) => {
     if (sorting.sortBy !== column) {
@@ -297,12 +282,13 @@ export default function InvoiceManagement() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div>
-                        <button
-                          onClick={() => generatePDF(invoice)}
+                        <Link
+                          to={`/invoice/${invoice._id}`}
+                          target="_blank"
                           className="inline text-sm font-medium text-indigo-600 hover:text-indigo-900"
                         >
                           {invoice.invoiceNumber}
-                        </button>
+                        </Link>
                       </div>
                     </div>
                   </td>
@@ -337,7 +323,7 @@ export default function InvoiceManagement() {
                     <div className="flex items-center">
                       <div>
                         <div className="inline text-sm font-medium text-gray-900">
-                          {invoice.total} { invoice.currency}
+                          {invoice.total} {invoice.currency}
                         </div>
                       </div>
                     </div>
