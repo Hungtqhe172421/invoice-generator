@@ -197,8 +197,6 @@ export default function InvoiceForm({ initialData,invoiceNumber }: InvoiceFormPr
         balanceDue: total
       };
 
-      setFormData(updatedFormData);
-
       const template = invoiceTemplates.find(t => t.name == formData.template);
       if (!template) {
         setSaveStatus({ type: 'error', message: 'Template not found' });
