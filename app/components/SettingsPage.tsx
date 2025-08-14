@@ -120,7 +120,7 @@ export default function SettingsPage({ initialData }: SettingsFormProps) {
                 disabled={isSubmitting}
                 form="settings-form"
               >
-              {isSubmitting ? "Saving ..." : "Save Invoice"}
+                {isSubmitting ? "Saving ..." : "Save Invoice"}
               </button>
             </div>
           </div>
@@ -135,6 +135,7 @@ export default function SettingsPage({ initialData }: SettingsFormProps) {
                       type="text"
                       name="title"
                       value={formData.title}
+                      maxLength={50}
                       onChange={(e) => handleInputChange('title', e.target.value)}
                       className="text-xl w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Invoice"
@@ -174,7 +175,7 @@ export default function SettingsPage({ initialData }: SettingsFormProps) {
                         name="fromName"
                         value={formData.fromName}
                         onChange={(e) => handleInputChange('fromName', e.target.value)}
-
+                        maxLength={50}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Business Name"
                       />
@@ -185,6 +186,7 @@ export default function SettingsPage({ initialData }: SettingsFormProps) {
                         type="email"
                         name="fromEmail"
                         value={formData.fromEmail}
+                        maxLength={50}
                         onChange={(e) => handleInputChange('fromEmail', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="name@business.com"
@@ -195,6 +197,7 @@ export default function SettingsPage({ initialData }: SettingsFormProps) {
                       <input
                         type="text"
                         name="fromAddress"
+                        maxLength={50}
                         value={formData.fromAddress}
                         onChange={(e) => handleInputChange('fromAddress', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -206,6 +209,7 @@ export default function SettingsPage({ initialData }: SettingsFormProps) {
                       <input
                         type="tel"
                         name="fromPhone"
+                        maxLength={50}
                         value={formData.fromPhone}
                         onChange={(e) => handleInputChange('fromPhone', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -217,6 +221,7 @@ export default function SettingsPage({ initialData }: SettingsFormProps) {
                       <input
                         type="tel"
                         name="businessNumber"
+                        maxLength={50}
                         value={formData.businessNumber}
                         onChange={(e) => handleInputChange('businessNumber', e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"

@@ -26,7 +26,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
     const user = await User.findOne({ email});
     if (!user) {
-      return json({ error: 'Invalid account' }, { status: 401 });
+      return json({ error: 'Invalid email or password' }, { status: 401 });
     }
 
     const isValidPassword = await verifyPassword(password, user.password);

@@ -10,9 +10,10 @@ import CurrencySelector from './CurrencySelector';
 
 interface InvoiceFormProps {
   initialData?: Partial<InvoiceData>;
+  invoiceNumber?: string;
 }
 
-export default function InvoiceForm({ initialData }: InvoiceFormProps) {
+export default function InvoiceForm({ initialData,invoiceNumber }: InvoiceFormProps) {
   const [formData, setFormData] = useState<InvoiceData>({
     title: 'Invoice',
     template: 'Classic',
@@ -28,7 +29,7 @@ export default function InvoiceForm({ initialData }: InvoiceFormProps) {
     billToMobile: '',
     billToFax: '',
     logo: '',
-    invoiceNumber: '',
+    invoiceNumber: invoiceNumber || '',
     date: new Date().toISOString().split('T')[0],
     terms: 'On Receipt',
     notes: '',

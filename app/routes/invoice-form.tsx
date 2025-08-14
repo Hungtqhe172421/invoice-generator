@@ -1,7 +1,7 @@
 import { json, redirect } from '@remix-run/node';
 import type { LoaderFunctionArgs, ActionFunctionArgs } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
-import { createInvoice } from '~/models/invoice';
+import { createInvoice, generateInvoiceNumber } from '~/models/invoice';
 import InvoiceForm from '~/components/InvoiceForm';
 import type { InvoiceData } from '~/models/invoice';
 import { getUserFromRequest } from '~/utils/auth.server';
@@ -19,8 +19,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     await connectToDatabase();
 
  const settings = await Settings.findOne({ user: authUser.userId }).lean();
+ let invoiceNumber = "";
 
-    return json({ settings });
+  invoiceNumber = await generateInvoiceNumber();
+
+    return json({ settings, invoiceNumber });
   } catch (error) {
     throw new Response('Internal Server Error', { status: 500 });
   }
@@ -98,14 +101,15 @@ try {
 
 
 export default function InvoiceFormRoute() {
-  const { settings } = useLoaderData<typeof loader>();
+  const { settings,invoiceNumber } = useLoaderData<typeof loader>();
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4">
 
-        <InvoiceForm
+<InvoiceForm
           initialData={settings ? (settings as Partial<InvoiceData>) : undefined}
+          invoiceNumber={invoiceNumber}
         />
       </div>
     </div>

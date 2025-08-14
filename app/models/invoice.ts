@@ -140,6 +140,21 @@ invoiceSchema.pre('save', function (next) {
 
 export const Invoice = models.Invoice || model('Invoice', invoiceSchema);
 
+export async function generateInvoiceNumber(): Promise<string> {
+  let invoiceNumber = "";
+  let exists = true;
+
+  while (exists) {
+  const randomNum = Math.floor(100000 + (Math.random() * 900000)).toString();
+    invoiceNumber = `IV${randomNum}`;
+
+    const found = await Invoice.exists({ invoiceNumber });
+    exists = !!found;
+  }
+
+  return invoiceNumber;
+}
+
 
 export async function createInvoice(
   invoiceData: Omit<InvoiceData, 'createdAt' | 'updatedAt' | '_id'>
@@ -184,3 +199,4 @@ export async function deleteInvoicesByUserId(userId: string): Promise<number> {
     throw new Error(error?.message || 'Internal server error');
   }
 }
+
