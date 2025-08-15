@@ -74,6 +74,8 @@ export default function InvoiceForm({ initialData,invoiceNumber }: InvoiceFormPr
   const navigation = useNavigation();
   const isSubmitting = navigation.state !== "idle";
 
+  
+
   useEffect(() => {
     if (actionData?.success) {
       navigate('/invoices-list', {

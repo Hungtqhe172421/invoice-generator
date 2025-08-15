@@ -14,13 +14,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       return redirect('/login');
     }
 
-    const invoiceId = params.id;
-    if (!invoiceId) {
-      throw new Response('Invoice ID is required', { status: 400 });
-    }
     await connectToDatabase();
     
-    const invoice = await Invoice.findById(invoiceId);
+    const invoice = await Invoice.findById(params.id);
     if (!invoice) {
       throw new Response('Invoice not found', { status: 404 });
     }
@@ -33,6 +29,9 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
       invoice: invoice,
     });
   } catch (error) {
+    if (error instanceof Response) {
+      throw error;
+    }
     throw new Response(' Error', { status: 500 });
   }
 };
