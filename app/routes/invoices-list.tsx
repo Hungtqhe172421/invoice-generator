@@ -4,7 +4,7 @@ import { Invoice, InvoiceData } from '~/models/invoice';
 import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { connectToDatabase } from '~/utils/db.server';
 import { getUserFromRequest } from '~/utils/auth.server';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Printer, Trash2 } from 'lucide-react';
 import { invoiceTemplates } from '~/components/Template';
 
 
@@ -56,7 +56,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const [invoices, totalInvoices] = await Promise.all([
     Invoice.find(query)
-      .select("invoiceNumber title fromName billToName total currency createdAt updatedAt")
+      .select("invoiceNumber title fromName billToName subtotal total currency createdAt updatedAt")
       .sort(sortObj)
       .limit(limit)
       .skip((page - 1) * limit),
@@ -291,6 +291,15 @@ export default function InvoiceManagement() {
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   <Link
+                    to={getSortUrl('subtotal')}
+                    className="flex items-center space-x-1 hover:text-gray-700"
+                  >
+                    <span>SubTotal</span>
+                    {getSortIcon('subtotal')}
+                  </Link>
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <Link
                     to={getSortUrl('total')}
                     className="flex items-center space-x-1 hover:text-gray-700"
                   >
@@ -368,6 +377,15 @@ export default function InvoiceManagement() {
                     <div className="flex items-center">
                       <div>
                         <div className="inline text-sm font-medium text-gray-900">
+                          {invoice.subtotal} {invoice.currency}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div>
+                        <div className="inline text-sm font-medium text-gray-900">
                           {invoice.total} {invoice.currency}
                         </div>
                       </div>
@@ -390,6 +408,13 @@ export default function InvoiceManagement() {
                         title="Edit Invoice"
                       >
                         <Edit className="w-4 h-4" />
+                      </Link>
+                                            <Link
+                          to={`/invoice/${invoice._id}`}
+                          target="_blank"
+                        title="Edit Invoice"
+                      >
+                        <Printer className="w-4 h-4" />
                       </Link>
 
 
