@@ -1,6 +1,6 @@
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
 import { Form, useActionData, useLoaderData, useNavigation, Link } from '@remix-run/react';
-import { Search, Trash2 } from 'lucide-react';
+import {  Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import User, { deleteUserWithInvoices, IUser } from '~/models/user.server';
 import { getUserFromRequest } from '~/utils/auth.server';

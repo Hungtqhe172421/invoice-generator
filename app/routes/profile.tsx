@@ -13,10 +13,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   await connectToDatabase();
   const user = await User.findById(authUser.userId);
-  
-  if (!user) {
-    return redirect('/signin');
-  }
 
   return json({ user: {
     _id: user._id,

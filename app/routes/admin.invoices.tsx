@@ -117,8 +117,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       hasPrev: page > 1
     },
     filters: { search },
-    sorting: { sortBy, sortOrder },
-    authUserId: authUser.userId
+    sorting: { sortBy, sortOrder }
   });
 }
 
