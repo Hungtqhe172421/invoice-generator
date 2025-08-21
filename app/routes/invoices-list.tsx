@@ -19,7 +19,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const page = parseInt(url.searchParams.get('page') || '1');
   const limit = 10;
   const search = url.searchParams.get('search') || '';
-  const sortBy = url.searchParams.get('sortBy') || 'createdAt';
+  const sortBy = url.searchParams.get('sortBy') || 'updatedAt';
   const sortOrder = url.searchParams.get('sortOrder') || 'desc';
 
   await connectToDatabase();

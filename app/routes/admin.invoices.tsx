@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, json, Link, redirect, useLoaderData, useNavigation } from '@remix-run/react';
 import { Invoice, InvoiceData } from '~/models/invoice';
 import { LoaderFunctionArgs } from '@remix-run/node';
@@ -14,7 +14,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const page = parseInt(url.searchParams.get('page') || '1');
   const limit = 10;
   const search = url.searchParams.get('search') || '';
-  const sortBy = url.searchParams.get('sortBy') || 'createdAt';
+  const sortBy = url.searchParams.get('sortBy') || 'updatedAt';
   const sortOrder = url.searchParams.get('sortOrder') || 'desc';
 
   await connectToDatabase();
@@ -125,8 +125,14 @@ export default function InvoiceManagement() {
   const { invoices, pagination, filters, sorting } = useLoaderData<typeof loader>();
   const [jumpPage, setJumpPage] = useState('');
   const navigation = useNavigation();
+    const [mounted, setMounted] = useState(false);
 
-  const isLoading = navigation.state === "loading"
+  const isLoading = navigation.state === "loading"|| !mounted;
+
+    useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const getSortIcon = (column: string) => {
     if (sorting.sortBy !== column) {
       return (
