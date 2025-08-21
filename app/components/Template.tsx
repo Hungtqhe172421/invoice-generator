@@ -46,7 +46,7 @@ export function TemplateSelector({
 
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {invoiceTemplates.map((template) => (
-          <label htmlFor="lint"
+          <label
             key={template.name}
             className={`cursor-pointer border-2 rounded-lg p-3 transition-all hover:shadow-md ${selectedTemplate === template.name
               ? 'border-blue-500 bg-blue-50 shadow-md'
