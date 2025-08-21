@@ -11,12 +11,8 @@ const currencyFlags: Record<string, string> = {
   JPY: 'https://upload.wikimedia.org/wikipedia/commons/9/9e/Flag_of_Japan.svg',
   AUD: 'https://upload.wikimedia.org/wikipedia/en/b/b9/Flag_of_Australia.svg',
   CAD: 'https://upload.wikimedia.org/wikipedia/commons/c/cf/Flag_of_Canada.svg',
-  CHF: 'https://upload.wikimedia.org/wikipedia/commons/f/f3/Flag_of_Switzerland.svg',
   CNY: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Flag_of_the_People%27s_Republic_of_China.svg',
-  INR: 'https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg',
-  SGD: 'https://upload.wikimedia.org/wikipedia/commons/4/48/Flag_of_Singapore.svg',
-  THB: 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Flag_of_Thailand.svg',
-  RUB: 'https://upload.wikimedia.org/wikipedia/en/f/f3/Flag_of_Russia.svg'
+  INR: 'https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg'
 };
 
 
@@ -26,7 +22,7 @@ export default function CurrencySelector({
 }: CurrencySelectorProps) {
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700 border-b border-gray-300">
+      <label htmlFor="lint" className="block text-sm font-medium text-gray-700 border-b border-gray-300">
         CURRENCY
       </label>
       <div className="relative">

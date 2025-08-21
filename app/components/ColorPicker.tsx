@@ -24,7 +24,7 @@ export default function ColorPicker({
 }: ColorPickerProps) {
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700 border-b border-gray-300">
+      <label htmlFor="lint" className="block text-sm font-medium text-gray-700 border-b border-gray-300">
         COLOR
       </label>
       <input type="hidden" name="color" value={selectedColor} />

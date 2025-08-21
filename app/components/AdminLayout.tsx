@@ -11,24 +11,22 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <h2 className="text-xl font-bold mb-6">Admin Panel</h2>
         <nav className="space-y-2">
           <NavLink
-            to="/admin/invoices"
-            className={({ isActive }) =>
-              `block rounded px-2 py-1 ${
-                isActive ? "bg-gray-700 font-semibold" : "hover:bg-gray-700"
-              }`
-            }
-          >
-            Invoices
-          </NavLink>
-          <NavLink
             to="/admin/users"
             className={({ isActive }) =>
-              `block rounded px-2 py-1 ${
-                isActive ? "bg-gray-700 font-semibold" : "hover:bg-gray-700"
+              `block rounded px-2 py-1 ${isActive ? "bg-gray-700 font-semibold" : "hover:bg-gray-700"
               }`
             }
           >
             Users
+          </NavLink>
+          <NavLink
+            to="/admin/invoices"
+            className={({ isActive }) =>
+              `block rounded px-2 py-1 ${isActive ? "bg-gray-700 font-semibold" : "hover:bg-gray-700"
+              }`
+            }
+          >
+            Invoices
           </NavLink>
         </nav>
       </aside>

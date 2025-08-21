@@ -63,7 +63,7 @@ export async function action({ request }: ActionFunctionArgs) {
       success: true,
       message: 'Password reset successfully. You can now sign in with your new password.'
     });
-  } catch (error) {
+  } catch {
     return json({ error: 'Reset password error.' }, { status: 500 });
   }
 }
@@ -220,7 +220,7 @@ export default function ResetPassword() {
               to="/forgot-password"
               className="font-medium text-indigo-600 hover:text-indigo-500"
             >
-              Didn't receive a code? Request new one
+              Did not receive a code? Request new one
             </Link>
             <div>
               <Link

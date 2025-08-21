@@ -1,6 +1,3 @@
-// components/SkeletonRow.tsx
-import React from "react";
-
 interface SkeletonRowProps {
   columns: number;
 }

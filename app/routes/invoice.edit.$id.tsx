@@ -91,13 +91,13 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
         success: true,
         invoice: updatedInvoice
       });
-    } catch (error) {
+    } catch  {
       return json({
         success: false,
         error: 'Error'
       }, { status: 400 });
     }
-  } catch (error) {
+  } catch  {
     return json(
       { success: false, error: 'Internal server error' },
       { status: 500 }

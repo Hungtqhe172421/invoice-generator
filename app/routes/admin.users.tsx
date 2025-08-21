@@ -1,7 +1,9 @@
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
 import { Form, useActionData, useLoaderData, useNavigation, Link } from '@remix-run/react';
 import { Trash2 } from 'lucide-react';
+import { FilterQuery } from 'mongoose';
 import { useState } from 'react';
+import { InvoiceData } from '~/models/invoice';
 import User, { deleteUserWithInvoices, IUser } from '~/models/user.server';
 import { getUserFromRequest } from '~/utils/auth.server';
 import { connectToDatabase } from '~/utils/db.server';
@@ -22,8 +24,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const sortOrder = url.searchParams.get('sortOrder') || 'desc';
 
     await connectToDatabase();
+const query:  FilterQuery<InvoiceData> = {};
 
-    const query: any = {};
 
 
     function escapeRegExp(str: string) {
@@ -41,8 +43,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
     }
 
 
-    const sortObj: any = {};
-    sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+const sortObj: Record<string, 1 | -1> = {
+  [sortBy]: sortOrder === "asc" ? 1 : -1,
+};
 
     const [users, totalUsers] = await Promise.all([
         User.find(query)
@@ -89,7 +92,7 @@ export async function action({ request }: ActionFunctionArgs) {
                 success: true,
                 message: `User ${user.isActive ? 'activated' : 'deactivated'} successfully`
             });
-        } catch (error) {
+        } catch  {
             return json({ error: 'Failed to update user status' }, { status: 500 });
         }
     }
@@ -108,7 +111,7 @@ export async function action({ request }: ActionFunctionArgs) {
                 success: true,
                 message: `User role changed to ${newRole} successfully`
             });
-        } catch (error) {
+        } catch  {
             return json({ error: 'Failed to change user role' }, { status: 500 });
         }
     }
@@ -121,7 +124,7 @@ export async function action({ request }: ActionFunctionArgs) {
                 success: true,
                 message: `User deleted successfully. ${result.deletedInvoicesCount} invoices were also deleted.`
             });
-        } catch (error) {
+        } catch  {
             return json({ error: 'Failed to delete user' }, { status: 500 });
         }
     }

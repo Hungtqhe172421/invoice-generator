@@ -45,7 +45,7 @@ export async function action({ request }: ActionFunctionArgs) {
     return json({ 
       success: true
     });
-  } catch (error) {
+  } catch  {
     throw new Response( 'Forgot password error.' , { status: 500 });
   }
 }
@@ -64,7 +64,7 @@ useEffect(() => {
       },
     });
   }
-}, [actionData]);
+}, [actionData,navigate]);
 
 
   return (
@@ -75,7 +75,7 @@ useEffect(() => {
             Forgot your password?
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Enter your email address and we'll send you a verification code to reset your password.
+            Enter your email address and we will send you a verification code to reset your password.
           </p>
         </div>
         

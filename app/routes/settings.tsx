@@ -1,4 +1,4 @@
-import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from '@remix-run/node'; // Adjust
+import { ActionFunctionArgs, LoaderFunctionArgs, json, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -33,7 +33,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     await connectToDatabase();
     const settings = await Settings.findOne({ user: authUser.userId }).lean();
     return json({ settings });
-  } catch (error) {
+  } catch {
     throw new Response('Internal Server Error', { status: 500 });
   }
 };
@@ -78,7 +78,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
 
     return json({ success: true, message: "Settings saved successfully" });
-  } catch (error) {
+  } catch {
     return json({ success: false, error: "Failed to save settings" }, { status: 500 });
   }
 };

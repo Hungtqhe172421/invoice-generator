@@ -59,7 +59,7 @@ export const invoiceSchema = zfd.formData({
       const parsed = JSON.parse(str);
       const result = z.array(itemSchema).min(1, 'At least one item is required').parse(parsed);
       return result;
-    } catch (error) {
+    } catch {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'Invalid items format or empty items list',
@@ -84,7 +84,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   invoiceNumber = await generateInvoiceNumber();
 
     return json({ settings, invoiceNumber });
-  } catch (error) {
+  } catch {
     throw new Response('Internal Server Error', { status: 500 });
   }
 };

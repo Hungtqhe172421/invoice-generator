@@ -28,7 +28,7 @@ export default function Header({ user }: HeaderProps) {
             {user.role === 'admin' && (
               <>
                 <Link
-                  to="/admin"
+                  to="/admin/users"
                   className="text-sm text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
                 >
                   Admin

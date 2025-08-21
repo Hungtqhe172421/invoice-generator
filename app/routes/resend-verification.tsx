@@ -14,7 +14,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
         'Set-Cookie': 'token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax'
       }
     });
-
   }
   return null;
 }
@@ -65,7 +64,7 @@ export async function action({ request }: ActionFunctionArgs) {
       email: user.email,
     });
 
-  } catch (error) {
+  } catch {
     return json({
       error: 'Error.'
     }, { status: 500 });

@@ -16,12 +16,12 @@ const taxOptions = [
 export default function TaxSelector({ taxType, taxRate, onTaxTypeChange, onTaxRateChange }: TaxSelectorProps) {
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700 border-b border-gray-300 pb-1">
+      <label htmlFor="lint" className="block text-sm font-medium text-gray-700 border-b border-gray-300 pb-1">
         TAX
       </label>
       <div className="space-y-2">
         <div>
-          <label className="block text-xs text-gray-600 mb-1">Type</label>
+          <label htmlFor="lint" className="block text-xs text-gray-600 mb-1">Type</label>
           <select
             value={taxType}
             name="taxType"
@@ -37,7 +37,7 @@ export default function TaxSelector({ taxType, taxRate, onTaxTypeChange, onTaxRa
         </div>
         {taxType !== 'None' && (
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Rate (%)</label>
+            <label htmlFor="lint" className="block text-xs text-gray-600 mb-1">Rate (%)</label>
             <input
               type="number"
               name="taxRate"

@@ -1,5 +1,5 @@
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
-import { Form, useActionData, useLoaderData, useNavigation } from '@remix-run/react';
+import { Form, useActionData, useNavigation } from '@remix-run/react';
 import User from '~/models/user.server';
 import { getUserFromRequest, hashPassword, verifyPassword } from '~/utils/auth.server';
 import { connectToDatabase } from '~/utils/db.server';
@@ -68,7 +68,7 @@ export async function action({ request }: ActionFunctionArgs) {
       await user.save();
 
       return json({ success: true, message: 'Password changed successfully' });
-    } catch (error) {
+    } catch {
       return json({ error: 'Failed to change password' }, { status: 500 });
     }
   }

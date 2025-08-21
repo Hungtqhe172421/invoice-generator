@@ -1,3 +1,5 @@
+import type { LinksFunction, LoaderFunctionArgs } from '@remix-run/node';
+import { json } from '@remix-run/node';
 import {
   isRouteErrorResponse,
   Links,
@@ -9,11 +11,8 @@ import {
   useNavigate,
   useRouteError,
 } from '@remix-run/react';
-import type { LinksFunction, LoaderFunctionArgs } from '@remix-run/node';
-import { json } from '@remix-run/node';
 import Header from '~/components/Header';
 import { getUserFromRequest } from './utils/auth.server';
-import { Link } from 'lucide-react';
 
 
 export const links: LinksFunction = () => [

@@ -113,7 +113,7 @@ export async function deleteUserWithInvoices(userId: string): Promise<{ user: IU
       user: deletedUser ? deletedUser.toObject() : null,
       deletedInvoicesCount
     };
-  } catch (error) {
+  } catch {
     throw new Error('Failed to delete user and associated invoices');
   }
 }

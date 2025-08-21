@@ -1,7 +1,7 @@
 import { LoaderFunctionArgs } from '@remix-run/node';
 import { Form, json, Link, useLoaderData, useNavigation } from '@remix-run/react';
 import { useState } from 'react';
-import { Invoice } from '~/models/invoice';
+import { Invoice, InvoiceData } from '~/models/invoice';
 import { connectToDatabase } from '~/utils/db.server';
 import { formatCurrency } from '~/utils/format';
 import SkeletonRow from '~/utils/skeleton';
@@ -17,7 +17,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   await connectToDatabase();
 
-  const query: any = {};
+const query: Partial<InvoiceData> = {};
+
 
   function escapeRegExp(str: string) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -25,8 +26,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const escapedSearch = escapeRegExp(search);
 
-  const sortObj: any = {};
-  sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+const sortObj: Record<string, 1 | -1> = {
+  [sortBy]: sortOrder === "asc" ? 1 : -1,
+};
 
   const pipeline = [
     { $match: query },
@@ -266,7 +268,7 @@ export default function InvoiceManagement() {
               {isLoading
                 ? Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} columns={8}/>)
                 : invoices.map((invoice: any) => (
-                  <tr key={invoice._id}>
+                  <tr key={invoice._id} >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div>
@@ -285,7 +287,7 @@ export default function InvoiceManagement() {
                           <Link
                             to={`/invoice/${invoice._id}`}
                             target="_blank"
-                            className="inline text-sm font-medium text-indigo-600 hover:text-indigo-900"
+                            className="inline text-sm font-medium text-indigo-600 hover:text-indigo-900" rel="noreferrer"
                           >
                             {invoice.invoiceNumber}
                           </Link>

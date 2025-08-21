@@ -55,7 +55,7 @@ export async function action({ request }: ActionFunctionArgs) {
         'Set-Cookie': `token=${token}; HttpOnly; Path=/; Max-Age=${7 * 24 * 60 * 60}; SameSite=Lax`
       }
     });
-  } catch (error) {
+  } catch {
     return json({ error: 'An error occurred during sign in' }, { status: 500 });
   }
 
@@ -128,7 +128,7 @@ export default function SignIn() {
               to="/signup"
               className="font-medium text-indigo-600 hover:text-indigo-500"
             >
-              Don't have an account? Sign up
+              Do not have an account? Sign up
             </Link>
             <div className="mt-2">
               <Link

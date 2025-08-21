@@ -38,7 +38,7 @@ export async function sendPasswordResetEmail(email: string, resetCode: string, u
 
     await transporter.sendMail(mailOptions);
     return { success: true };
-  } catch (error) {
+  } catch {
     return { success: false, error: 'Failed to send email' };
   }
 }
@@ -63,7 +63,7 @@ export async function sendWelcomeEmail(email: string, username: string) {
 
     await transporter.sendMail(mailOptions);
     return { success: true };
-  } catch (error) {
+  } catch {
     return { success: false, error: 'Failed to send welcome email' };
   }
 }
@@ -121,7 +121,7 @@ export async function sendVerificationEmail(email: string, username: string, ver
 
     await transporter.sendMail(mailOptions);
     return { success: true };
-  } catch (error) {
+  } catch  {
     return { success: false, error: 'Failed to send verification email' };
   }
 }

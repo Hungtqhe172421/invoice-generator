@@ -1,8 +1,9 @@
 import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { Form, json, Link, redirect, useActionData, useLoaderData, useLocation, useNavigation } from '@remix-run/react';
 import { Edit, Printer, Trash2 } from 'lucide-react';
+import { FilterQuery } from 'mongoose';
 import { useEffect, useState } from 'react';
-import { Invoice } from '~/models/invoice';
+import { Invoice, InvoiceData } from '~/models/invoice';
 import { getUserFromRequest } from '~/utils/auth.server';
 import { connectToDatabase } from '~/utils/db.server';
 import { formatCurrency } from '~/utils/format';
@@ -24,7 +25,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   await connectToDatabase();
 
-  const query: any = { user: authUser.userId };
+const query: FilterQuery<InvoiceData> =  { user: authUser.userId };
 
   function escapeRegExp(str: string) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -63,8 +64,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   }
 
-  const sortObj: any = {};
-  sortObj[sortBy] = sortOrder === 'asc' ? 1 : -1;
+const sortObj: Record<string, 1 | -1> = {
+  [sortBy]: sortOrder === "asc" ? 1 : -1,
+};
+
 
   const [invoices, totalInvoices] = await Promise.all([
     Invoice.find(query)
@@ -118,7 +121,7 @@ export async function action({ request }: ActionFunctionArgs) {
         success: true,
         message: 'Invoice deleted successfully'
       });
-    } catch (error) {
+    } catch  {
       return json({ error: 'Failed to delete invoice' }, { status: 500 });
     }
   }
@@ -316,7 +319,7 @@ export default function InvoiceManagement() {
             <tbody className="bg-white divide-y divide-gray-200">
               {isLoading
                 ? Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} columns={9}/>)
-                : invoices.map((invoice: any) => (
+                : invoices.map((invoice: InvoiceData) => (
                   <tr key={invoice._id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -324,7 +327,7 @@ export default function InvoiceManagement() {
                           <Link
                             to={`/invoice/${invoice._id}`}
                             target="_blank"
-                            className="inline text-sm font-medium text-indigo-600 hover:text-indigo-900"
+                            className="inline text-sm font-medium text-indigo-600 hover:text-indigo-900" rel="noreferrer"
                           >
                             {invoice.invoiceNumber}
                           </Link>
@@ -389,7 +392,7 @@ export default function InvoiceManagement() {
                         <Link
                           to={`/invoice/${invoice._id}`}
                           target="_blank"
-                          title="Invoice"
+                          title="Invoice" rel="noreferrer"
                         >
                           <Printer className="w-4 h-4" />
                         </Link>

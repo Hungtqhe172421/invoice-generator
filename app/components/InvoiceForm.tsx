@@ -129,7 +129,7 @@ export default function InvoiceForm({ initialData,invoiceNumber }: InvoiceFormPr
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleItemChange = (index: number, field: keyof InvoiceItem, value: any) => {
+  const handleItemChange = (index: number, field: keyof InvoiceItem, value: InvoiceItem[typeof field]) => {
     const updatedItems = [...items];
     updatedItems[index] = { ...updatedItems[index], [field]: value };
 
@@ -210,7 +210,7 @@ const TemplateComponent = template.component;
 
     const url = URL.createObjectURL(blob);
     window.open(url);
-  } catch (error) {
+  } catch {
     setSaveStatus({ type: "error", message: "Failed to generate PDF" });
   }
 };
@@ -278,7 +278,8 @@ const TemplateComponent = template.component;
                   <div className="flex justify-end">
                     <div className="relative">
                       {formData.logo ? (
-                        <div className="group w-48 h-24 border border-gray-300 rounded-lg overflow-hidden relative cursor-pointer" onClick={triggerFilePicker}>
+                        <button
+  type="button" className="group w-48 h-24 border border-gray-300 rounded-lg overflow-hidden relative cursor-pointer" onClick={triggerFilePicker}>
                           <img src={formData.logo} alt="Logo preview" className="w-full h-full object-contain" />
                           <button
                             onClick={(e) => { e.stopPropagation(); removeLogo(); }}
@@ -286,11 +287,12 @@ const TemplateComponent = template.component;
                           >
                             ×
                           </button>
-                        </div>
+                        </button>
                       ) : (
-                        <div className="w-48 h-24 border-2 border-dashed border-gray-300 flex items-center justify-center rounded-lg cursor-pointer hover:border-gray-400 hover:bg-gray-50" onClick={triggerFilePicker}>
+                        <button
+  type="button" className="group w-48 h-24 border border-gray-300 rounded-lg overflow-hidden relative cursor-pointer" onClick={triggerFilePicker}>
                           <span className="text-gray-500">📷 + Logo</span>
-                        </div>
+                        </button>
                       )}
                       <input ref={fileInputRef} type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
                       <input type="hidden" name="logo" value={formData.logo || ''} />
@@ -302,7 +304,7 @@ const TemplateComponent = template.component;
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-gray-900">From</h3>
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Name</label>
+                      <label htmlFor="lint" className="block text-sm text-gray-600 mb-1">Name</label>
                       <input
                         type="text"
                         name="fromName"
@@ -315,7 +317,7 @@ const TemplateComponent = template.component;
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Email</label>
+                      <label htmlFor="lint" className="block text-sm text-gray-600 mb-1">Email</label>
                       <input
                         type="email"
                         name="fromEmail"
@@ -327,7 +329,7 @@ const TemplateComponent = template.component;
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Address</label>
+                      <label htmlFor="lint" className="block text-sm text-gray-600 mb-1">Address</label>
                       <input
                         type="text"
                         name="fromAddress"
@@ -339,7 +341,7 @@ const TemplateComponent = template.component;
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Phone</label>
+                      <label htmlFor="lint" className="block text-sm text-gray-600 mb-1">Phone</label>
                       <input
                         type="tel"
                         name="fromPhone"
@@ -351,7 +353,7 @@ const TemplateComponent = template.component;
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Business Number</label>
+                      <label htmlFor="lint" className="block text-sm text-gray-600 mb-1">Business Number</label>
                       <input
                         type="text"
                         name="businessNumber"
@@ -368,7 +370,7 @@ const TemplateComponent = template.component;
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold text-gray-900">Bill To</h3>
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Name</label>
+                      <label htmlFor="lint" className="block text-sm text-gray-600 mb-1">Name</label>
                       <input
                         type="text"
                         name="billToName"
@@ -381,7 +383,7 @@ const TemplateComponent = template.component;
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Email</label>
+                      <label htmlFor="lint" className="block text-sm text-gray-600 mb-1">Email</label>
                       <input
                         type="email"
                         name="billToEmail"
@@ -393,7 +395,7 @@ const TemplateComponent = template.component;
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Address</label>
+                      <label htmlFor="lint" className="block text-sm text-gray-600 mb-1">Address</label>
                       <input
                         type="text"
                         name="billToAddress"
@@ -405,7 +407,7 @@ const TemplateComponent = template.component;
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Phone</label>
+                      <label htmlFor="lint" className="block text-sm text-gray-600 mb-1">Phone</label>
                       <input
                         type="tel"
                         name="billToPhone"
@@ -417,7 +419,7 @@ const TemplateComponent = template.component;
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Mobile</label>
+                      <label htmlFor="lint" className="block text-sm text-gray-600 mb-1">Mobile</label>
                       <input
                         type="tel"
                         name="billToMobile"
@@ -429,7 +431,7 @@ const TemplateComponent = template.component;
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Fax</label>
+                      <label htmlFor="lint" className="block text-sm text-gray-600 mb-1">Fax</label>
                       <input
                         type="tel"
                         name="billToFax"
@@ -446,7 +448,7 @@ const TemplateComponent = template.component;
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Number</label>
+                      <label  htmlFor="lint" className="block text-sm text-gray-600 mb-1">Number</label>
                       <input
                         type="text"
                         name="invoiceNumber"
@@ -460,7 +462,7 @@ const TemplateComponent = template.component;
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Date</label>
+                      <label htmlFor="lint" className="block text-sm text-gray-600 mb-1">Date</label>
                       <input
                         type="date"
                         name="date"
@@ -470,7 +472,7 @@ const TemplateComponent = template.component;
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-600 mb-1">Terms</label>
+                      <label htmlFor="lint" className="block text-sm text-gray-600 mb-1">Terms</label>
                       <select
                         name="terms"
                         value={formData.terms}

@@ -79,7 +79,7 @@ export async function action({ request }: ActionFunctionArgs) {
       await user.save();
 
       return json({ success: true, message: 'Profile updated successfully' });
-    } catch (error) {
+    } catch{
       return json({ error: 'Failed to update profile' }, { status: 500 });
     }
   }

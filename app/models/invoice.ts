@@ -167,11 +167,11 @@ export async function createInvoice(
     const invoice = await Invoice.create(invoiceData);
     return invoice.toObject();
   } catch (err) {
-    const error = err as any;
+    const error = err as { code?: number };
     if (error?.code === 11000) {
       throw new Error(`Invoice number ${invoiceData.invoiceNumber} already exists`);
     }
-    throw new Error(error?.message || 'Internal server error');
+    throw new Error('Internal server error');
   }
 }
 
@@ -183,9 +183,8 @@ export async function updateInvoice(id: string, updates: Partial<InvoiceData>): 
       { new: true, runValidators: true }
     );
     return invoice.toObject();
-  } catch (err) {
-    const error = err as any;
-    throw new Error(error?.message || 'Internal server error');
+  } catch {
+    throw new Error('Internal server error');
   }
 }
 
@@ -194,9 +193,8 @@ export async function deleteInvoicesByUserId(userId: string): Promise<number> {
   try {
     const result = await Invoice.deleteMany({ user: userId });
     return result.deletedCount || 0;
-  } catch (err) {
-    const error = err as any;
-    throw new Error(error?.message || 'Internal server error');
+  } catch {
+    throw new Error('Internal server error');
   }
 }
 

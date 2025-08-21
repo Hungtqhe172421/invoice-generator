@@ -79,7 +79,7 @@ export async function action({ request }: ActionFunctionArgs) {
       email: email
     }, { status: 201 });
 
-  } catch (error) {
+  } catch {
     return json({ error: 'Sign up failed. Internet error!' }, { status: 500 });
   }
 }
@@ -98,7 +98,7 @@ export default function SignUp() {
               Check Your Email
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
-              We've sent a verification link to <strong>{actionData.email}</strong>
+              We have sent a verification link to <strong>{actionData.email}</strong>
             </p>
             <p className="mt-4 text-center text-sm text-gray-500">
               Please click the link in your email to verify your account.
