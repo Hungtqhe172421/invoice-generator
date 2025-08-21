@@ -8,6 +8,67 @@ import { getUserFromRequest } from '~/utils/auth.server';
 import { connectToDatabase } from '~/utils/db.server';
 import User from '~/models/user.server';
 import { Settings } from '~/models/settings';
+import { z } from "zod";
+import { zfd } from "zod-form-data";
+
+
+export const itemSchema = z.object({
+  description: z.string().min(1, 'Item description is required').max(50, 'Description must be less than 50 characters'),
+  additionalDetails: z.string().max(50, 'Additional details must be less than 50 characters').optional(),
+  rate: z.number().min(0, 'Rate must be positive').max(1000000000000, 'Rate too large'),
+  quantity: z.number().min(1, 'Quantity must be at least 1').max(999, 'Quantity cannot exceed 999'),
+  amount: z.number().min(0, 'Amount must be positive'),
+  taxable: z.boolean().default(true),
+});
+
+export const invoiceSchema = zfd.formData({
+  title: zfd.text(z.string().min(1, "Title is required").max(50, "Title must be less than 50 characters")),
+  fromName: zfd.text(z.string().min(1, "From name is required").max(50, "From name must be less than 50 characters")),
+  billToName: zfd.text(z.string().min(1, "Bill to name is required").max(50, "Bill to name must be less than 50 characters")),
+  invoiceNumber: zfd.text(z.string().min(1, "Invoice number is required").max(50, "Invoice number must be less than 50 characters")),
+  date: zfd.text(z.string().min(1, "Date is required")),
+  terms: zfd.text(z.string().min(1, "Terms are required")),
+  
+  template: zfd.text(z.string().optional().default('Classic')),
+  fromEmail: zfd.text(z.string().email('Invalid email format').max(50, "Email must be less than 50 characters").optional()),
+  fromAddress: zfd.text(z.string().max(50, "Address must be less than 50 characters").optional()),
+  fromPhone: zfd.text(z.string().max(50, "Phone must be less than 50 characters").optional()),
+  businessNumber: zfd.text(z.string().max(50, "Business number must be less than 50 characters").optional()),
+  billToEmail: zfd.text(z.string().email('Invalid email format').max(50, "Email must be less than 50 characters").optional()),
+  billToAddress: zfd.text(z.string().max(50, "Address must be less than 50 characters").optional()),
+  billToPhone: zfd.text(z.string().max(50, "Phone must be less than 50 characters").optional()),
+  billToMobile: zfd.text(z.string().max(50, "Mobile must be less than 50 characters").optional()),
+  billToFax: zfd.text(z.string().max(50, "Fax must be less than 50 characters").optional()),
+  notes: zfd.text(z.string().max(200, "Notes must be less than 200 characters").optional()),
+  signature: zfd.text(z.string().optional()),
+  color: zfd.text(z.string().optional().default('#ffffffff')),
+  logo: zfd.text(z.string().optional()),
+  
+  currency: zfd.text(z.string().optional().default('VND')),
+  taxType: zfd.text(z.string().min(1, 'Tax type is required')),
+  discountType: zfd.text(z.string().min(1, 'Discount type is required')),
+  taxRate: zfd.numeric(z.number().min(0, 'Tax rate must be positive').max(100, 'Tax rate cannot exceed 100%').optional().default(0)),
+  discountValue: zfd.numeric(z.number().min(0, 'Discount value must be positive').optional().default(0)),
+  subtotal: zfd.numeric(z.number().min(0, 'Subtotal must be positive')),
+  taxAmount: zfd.numeric(z.number().min(0, 'Tax amount must be positive')),
+  discountAmount: zfd.numeric(z.number().min(0, 'Discount amount must be positive')),
+  total: zfd.numeric(z.number().min(0, 'Total must be positive')),
+  
+  items: zfd.text(z.string().transform((str, ctx) => {
+    try {
+      const parsed = JSON.parse(str);
+      const result = z.array(itemSchema).min(1, 'At least one item is required').parse(parsed);
+      return result;
+    } catch (error) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Invalid items format or empty items list',
+      });
+      return z.NEVER;
+    }
+  })),
+});
+
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   try {
@@ -20,7 +81,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
  const settings = await Settings.findOne({ user: authUser.userId }).lean();
  let invoiceNumber = "";
-
   invoiceNumber = await generateInvoiceNumber();
 
     return json({ settings, invoiceNumber });
@@ -40,39 +100,21 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const userId = await User.findById(authUser.userId);
     const formData = await request.formData();
 
+    const parsed = invoiceSchema.safeParse(formData);
+    if (!parsed.success) {
+      return json(
+        {
+          success: false,
+          error: "Validation failed",
+        },
+        { status: 400 }
+      );
+    }
+
     const invoiceData: Partial<InvoiceData> = {
       user: userId,
-      title: formData.get('invoice') as string,
-      template: formData.get('template') as string || 'Classic',
-      fromName: formData.get('fromName') as string,
-      fromEmail: formData.get('fromEmail') as string || undefined,
-      fromAddress: formData.get('fromAddress') as string || undefined,
-      fromPhone: formData.get('fromPhone') as string || undefined,
-      businessNumber: formData.get('businessNumber') as string || undefined,
-      billToName: formData.get('billToName') as string,
-      billToEmail: formData.get('billToEmail') as string || undefined,
-      billToAddress: formData.get('billToAddress') as string || undefined,
-      billToPhone: formData.get('billToPhone') as string || undefined,
-      billToMobile: formData.get('billToMobile') as string || undefined,
-      billToFax: formData.get('billToFax') as string || undefined,
-      invoiceNumber: formData.get('invoiceNumber') as string,
-      date: formData.get('date') as string,
-      terms: formData.get('terms') as string,
-      notes: formData.get('notes') as string || undefined,
-      signature: formData.get('signature') as string || undefined,
-      color: formData.get('color') as string || undefined,
-      currency: formData.get('currency') as string || 'VND',
-      taxType: formData.get('taxType') as string,
-      taxRate: parseFloat(formData.get('taxRate') as string) || 0,
-      discountType: formData.get('discountType') as string,
-      discountValue: parseFloat(formData.get('discountValue') as string) || 0,
-      logo: formData.get('logo') as string || undefined,
-      items: JSON.parse(formData.get('items') as string),
-      subtotal: parseFloat(formData.get('subtotal') as string),
-      taxAmount: parseFloat(formData.get('taxAmount') as string),
-      discountAmount: parseFloat(formData.get('discountAmount') as string),
-      total: parseFloat(formData.get('total') as string),
       balanceDue: parseFloat(formData.get('total') as string) || 0,
+      ...parsed.data,
     };
 
 try {

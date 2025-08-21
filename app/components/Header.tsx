@@ -28,19 +28,19 @@ export default function Header({ user }: HeaderProps) {
             {user.role === 'admin' && (
               <>
                 <Link
-                  to="/admin/invoices"
+                  to="/admin"
                   className="text-sm text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
                 >
-                  Invoices
-                </Link>
-                <Link
-                  to="/admin/users"
-                  className="text-sm text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
-                >
-                  Users
+                  Admin
                 </Link>
               </>
             )}
+            <Link
+              to="/"
+              className="text-sm text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+            >
+              New Invoice
+            </Link>
             <Link
               to="/settings"
               className="text-sm text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"

@@ -43,7 +43,6 @@ export function getUserFromRequest(request: Request): JWTPayload | null {
 
   let token = '';
 
-
   if (authHeader && authHeader.startsWith('Bearer ')) {
     token = authHeader.substring(7);
   }

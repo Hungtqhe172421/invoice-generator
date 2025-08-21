@@ -1,7 +1,8 @@
-// app/routes/admin.invoices.$id.tsx
+import { pdf } from "@react-pdf/renderer";
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { redirect, useLoaderData } from "@remix-run/react";
-import React, { useEffect, useRef } from "react";
+import mongoose from "mongoose";
+import { useEffect, useState } from "react";
 import { invoiceTemplates } from "~/components/Template";
 import { Invoice } from "~/models/invoice";
 import { getUserFromRequest } from "~/utils/auth.server";
@@ -9,50 +10,67 @@ import { connectToDatabase } from "~/utils/db.server";
 
 
 export async function loader({ request, params }: LoaderFunctionArgs) {
-  try {
-    const authUser = getUserFromRequest(request);
-    if (!authUser) {
-      return redirect('/');
-    }
-
-    await connectToDatabase();
-    const invoice = await Invoice.findById(params.id);
-
- if (!invoice) {
-      return json(
-        { error: 'Invoice not found' },
-        { status: 404 }  
-      );
-    }
-
-    if (invoice.user == authUser.userId || authUser.role == 'admin') {
-      return json(invoice);
-    }
-
-    return json(
-      { error: 'Unauthorized to access this invoice' },
-      { status: 403 }
-    );
-
-  } catch (error) {
-    return json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+  const authUser = getUserFromRequest(request);
+  if (!authUser) {
+    return redirect('/');
   }
+  if (!params.id || !mongoose.Types.ObjectId.isValid(params.id)) {
+    throw new Response('Invalid invoice id', { status: 404 });
+  }
+
+  await connectToDatabase();
+
+
+  const invoice = await Invoice.findById(params.id);
+
+  if (!invoice) {
+    throw new Response('Invoice not found', { status: 404 });
+  }
+
+  if (invoice.user == authUser.userId || authUser.role == 'admin') {
+    return json(invoice);
+  }
+
+  throw new Response('Unauthorized to access this invoice', { status: 403 });
 }
+
+
+
 export default function InvoicePDFPage() {
   const invoice = useLoaderData<typeof loader>();
-  const data = useLoaderData<typeof loader>();
-  
-  if ('error' in data) {
-    return <div className="error" style={{marginTop:'1%',color:'red'}}>{data.error}</div>;
-  }
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+
   useEffect(() => {
-    const template = invoiceTemplates.find(t => t.name === invoice.template);
-    if (!template) return;
-    const invoiceHTML = template.generateHTML(invoice, invoice.items);
-    window.document.write(invoiceHTML);
-    window.document.close();
-  });
+    const generatePDF = async () => {
+      const template = invoiceTemplates.find((t) => t.name === invoice.template);
+      if (!template) return;
+
+      const TemplateComponent = template.component;
+
+      const blob = await pdf(
+        <TemplateComponent formData={invoice} items={invoice.items || []} />
+      ).toBlob();
+
+      const url = URL.createObjectURL(blob);
+      setPdfUrl(url);
+    };
+
+    generatePDF();
+  }, [invoice]);
+
+  return (
+    <div style={{ width: "100%", height: "100vh" }}>
+      {pdfUrl ? (
+        <iframe
+          src={pdfUrl}
+          style={{ width: "100%", height: "100%", border: "none" }}
+          title="Invoice PDF"
+        />
+      ) : (
+        <p style={{ textAlign: "center", marginTop: "20%" }}>
+          Generating invoice PDF...
+        </p>
+      )}
+    </div>
+  );
 }

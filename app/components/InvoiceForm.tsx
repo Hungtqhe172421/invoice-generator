@@ -5,8 +5,10 @@ import TaxSelector from '../components/TaxSelector';
 import DiscountSelector from '../components/DiscountSelector';
 import type { InvoiceData, InvoiceItem } from '~/models/invoice';
 import SignatureDrawer from '../components/SignatureDrawer';
-import { formatCurrency, invoiceTemplates, TemplateSelector } from './Template';
+import { invoiceTemplates, TemplateSelector } from './Template';
 import CurrencySelector from './CurrencySelector';
+import { pdf } from '@react-pdf/renderer';
+import { formatCurrency } from '~/utils/format';
 
 interface InvoiceFormProps {
   initialData?: Partial<InvoiceData>;
@@ -184,11 +186,6 @@ export default function InvoiceForm({ initialData,invoiceNumber }: InvoiceFormPr
 
   const generatePDF = async () => {
     try {
-      const printWindow = window.open('Invoice', '_blank');
-      if (!printWindow) {
-        setSaveStatus({ type: 'error', message: 'Please allow popups to generate PDF' });
-        return;
-      }
 
       const updatedFormData = {
         ...formData,
@@ -205,18 +202,18 @@ export default function InvoiceForm({ initialData,invoiceNumber }: InvoiceFormPr
         return;
       }
 
-      const invoiceHTML = template.generateHTML(updatedFormData, items);
-      printWindow.document.write(invoiceHTML);
-      printWindow.document.close();
+const TemplateComponent = template.component;
 
-      printWindow.onload = () => {
-        printWindow.focus();
-        printWindow.print();
-      };
-    } catch (error) {
-      setSaveStatus({ type: 'error', message: 'Failed to generate PDF' });
-    }
-  };
+    const blob = await pdf(
+      <TemplateComponent formData={updatedFormData} items={items} />
+    ).toBlob();
+
+    const url = URL.createObjectURL(blob);
+    window.open(url);
+  } catch (error) {
+    setSaveStatus({ type: "error", message: "Failed to generate PDF" });
+  }
+};
 
 
   return (
@@ -269,7 +266,7 @@ export default function InvoiceForm({ initialData,invoiceNumber }: InvoiceFormPr
                   <div>
                     <input
                       type="text"
-                      name="invoice"
+                      name="title"
                       value={formData.title}
                       onChange={(e) => handleInputChange('title', e.target.value)}
                       maxLength={50}
@@ -315,7 +312,6 @@ export default function InvoiceForm({ initialData,invoiceNumber }: InvoiceFormPr
                         required
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Business Name"
-
                       />
                     </div>
                     <div>

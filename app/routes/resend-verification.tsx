@@ -1,6 +1,5 @@
-// app/routes/resend-verification.tsx
 import { json, type ActionFunctionArgs, type LoaderFunctionArgs } from "@remix-run/node";
-import { Form, useActionData, useNavigation, Link, useSearchParams, redirect } from "@remix-run/react";
+import { Form, Link, redirect, useActionData, useNavigation } from "@remix-run/react";
 import User from "~/models/user.server";
 import { getUserFromRequest } from "~/utils/auth.server";
 import { connectToDatabase } from "~/utils/db.server";
@@ -10,7 +9,7 @@ import { sendVerificationEmail } from "~/utils/email";
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = getUserFromRequest(request);
   if (user) {
-   return redirect('/resend-verification', {
+    return redirect('/resend-verification', {
       headers: {
         'Set-Cookie': 'token=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax'
       }
@@ -25,27 +24,27 @@ export async function action({ request }: ActionFunctionArgs) {
   const email = formData.get('email') as string;
   try {
     await connectToDatabase();
-    
+
     const user = await User.findOne({ email: email.toLowerCase().trim() });
 
     if (!user) {
-      return json({ 
-        success: true, 
+      return json({
+        success: true,
         message: 'A verification email has been sent.',
         email: email
       });
     }
 
     if (user.isEmailVerified) {
-      return json({ 
+      return json({
         error: 'This email address is already verified.',
         alreadyVerified: true
       }, { status: 400 });
     }
 
     if (!user.isActive && user.isEmailVerified) {
-      return json({ 
-        error: 'Your account has been deactivated.' 
+      return json({
+        error: 'Your account has been deactivated.'
       }, { status: 403 });
     }
 
@@ -53,22 +52,22 @@ export async function action({ request }: ActionFunctionArgs) {
     await user.save();
 
     const emailResult = await sendVerificationEmail(user.email, user.username, verificationToken);
-    
+
     if (!emailResult.success) {
-      return json({ 
-        error: 'Failed to send verification email' 
+      return json({
+        error: 'Failed to send verification email'
       }, { status: 500 });
     }
 
-    return json({ 
-      success: true, 
+    return json({
+      success: true,
       message: 'Verification email sent successfully!',
       email: user.email,
     });
 
   } catch (error) {
-    return json({ 
-      error: 'Error.' 
+    return json({
+      error: 'Error.'
     }, { status: 500 });
   }
 }
@@ -136,17 +135,17 @@ export default function ResendVerification() {
             />
           </div>
 
-          {actionData && 'error' in actionData  && (
+          {actionData && 'error' in actionData && (
             <div className="rounded-md bg-red-50 p-4">
               <div className="flex">
                 <div className="ml-3">
                   <h3 className="text-sm font-medium text-red-800">
-                    {(actionData && 'alreadyVerified' in actionData)? 'Email Already Verified' : 'Error sending mail'}
+                    {(actionData && 'alreadyVerified' in actionData) ? 'Email Already Verified' : 'Error sending mail'}
                   </h3>
                   <div className="mt-2 text-sm text-red-700">
                     {actionData.error}
                   </div>
-                  {actionData && 'alreadyVerified' in actionData  && (
+                  {actionData && 'alreadyVerified' in actionData && (
                     <div className="mt-3">
                       <Link
                         to="/signin"
@@ -165,7 +164,7 @@ export default function ResendVerification() {
             <button
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-               disabled={isSubmitting}
+              disabled={isSubmitting}
             >
               {isSubmitting ? "Sending ..." : "Send Verification Email"}
             </button>
@@ -176,7 +175,7 @@ export default function ResendVerification() {
               to="/signin"
               className="font-medium text-indigo-600 hover:text-indigo-500"
             >
-               Back to Sign In
+              Back to Sign In
             </Link>
           </div>
         </Form>

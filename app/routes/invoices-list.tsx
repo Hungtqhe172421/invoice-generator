@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Form, json, Link, redirect, useActionData, useLoaderData, useLocation, useNavigation } from '@remix-run/react';
-import { Invoice, InvoiceData } from '~/models/invoice';
 import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
-import { connectToDatabase } from '~/utils/db.server';
-import { getUserFromRequest } from '~/utils/auth.server';
+import { Form, json, Link, redirect, useActionData, useLoaderData, useLocation, useNavigation } from '@remix-run/react';
 import { Edit, Printer, Trash2 } from 'lucide-react';
-import { invoiceTemplates } from '~/components/Template';
+import { useEffect, useState } from 'react';
+import { Invoice } from '~/models/invoice';
+import { getUserFromRequest } from '~/utils/auth.server';
+import { connectToDatabase } from '~/utils/db.server';
+import { formatCurrency } from '~/utils/format';
+import { SkeletonRow } from '~/utils/skeleton';
 
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -40,12 +41,23 @@ export async function loader({ request }: LoaderFunctionArgs) {
         { currency: { $eq: escapedSearch } },
         {
           $expr: {
-            $regexMatch: {
-              input: { $toString: "$total" },
-              regex: escapedSearch,
-              options: 'i'
-            }
-          }
+    $or: [
+      {
+        $regexMatch: {
+          input: { $toString: "$total" },
+          regex: escapedSearch,
+          options: "i"
+        }
+      },
+      {
+        $regexMatch: {
+          input: { $toString: "$subtotal" },
+          regex: escapedSearch,
+          options: "i"
+        }
+      }
+    ]
+  }
         }
       ];
 
@@ -119,7 +131,8 @@ export default function InvoiceManagement() {
   const location = useLocation();
   const [jumpPage, setJumpPage] = useState('');
   const [showStatus, setShowStatus] = useState(false);
-
+  const navigation = useNavigation();
+  const isLoading = navigation.state === "loading";
   useEffect(() => {
     if (location.state?.message) {
       setShowStatus(true);
@@ -127,36 +140,6 @@ export default function InvoiceManagement() {
       return () => clearTimeout(timer);
     }
   }, [location.state]);
-
-
-  const generatePDF = async (invoice: InvoiceData) => {
-    try {
-      const printWindow = window.open('Invoice', '_blank');
-      if (!printWindow) {
-        console.error('Failed to open print window');
-        return;
-      }
-
-      const template = invoiceTemplates.find(t => t.name === invoice.template);
-      if (!template) {
-        console.error('Template not found:', invoice.template);
-        printWindow.close();
-        return;
-      }
-
-      const invoiceHTML = template.generateHTML(invoice, invoice.items);
-      printWindow.document.write(invoiceHTML);
-      printWindow.document.close();
-
-      printWindow.onload = () => {
-        printWindow.focus();
-        printWindow.print();
-      };
-
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    }
-  };
 
   const getSortIcon = (column: string) => {
     if (sorting.sortBy !== column) {
@@ -331,117 +314,116 @@ export default function InvoiceManagement() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {invoices.map((invoice: any) => (
-                <tr key={invoice._id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div>
+              {isLoading
+                ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+                : invoices.map((invoice: any) => (
+                  <tr key={invoice._id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div>
+                          <Link
+                            to={`/invoice/${invoice._id}`}
+                            target="_blank"
+                            className="inline text-sm font-medium text-indigo-600 hover:text-indigo-900"
+                          >
+                            {invoice.invoiceNumber}
+                          </Link>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div>
+                          <div className="inline text-sm font-medium text-gray-900">
+                            {invoice.title}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div>
+                          <div className="inline text-sm font-medium text-gray-900">
+                            {invoice.fromName}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div>
+                          <div className="inline text-sm font-medium text-gray-900">
+                            {invoice.billToName}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex justify-end">
+                        <div>
+                          <div className="inline text-sm font-medium text-gray-900">
+                            {formatCurrency(invoice.subtotal, invoice.currency)}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex justify-end">
+                        <div>
+                          <div className="inline text-sm font-medium text-gray-900">
+                            {formatCurrency(invoice.total, invoice.currency)}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {new Date(invoice.createdAt!).toLocaleDateString("en-GB")}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {invoice.updatedAt
+                        ? new Date(invoice.updatedAt).toLocaleDateString("en-GB")
+                        : 'Never'}
+                    </td>
+                    <td className="px-6 py-4 justify-center whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center justify-end space-x-2">
                         <Link
                           to={`/invoice/${invoice._id}`}
                           target="_blank"
-                          className="inline text-sm font-medium text-indigo-600 hover:text-indigo-900"
+                          title="Invoice"
                         >
-                          {invoice.invoiceNumber}
+                          <Printer className="w-4 h-4" />
                         </Link>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div>
-                        <div className="inline text-sm font-medium text-gray-900">
-                          {invoice.title}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div>
-                        <div className="inline text-sm font-medium text-gray-900">
-                          {invoice.fromName}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div>
-                        <div className="inline text-sm font-medium text-gray-900">
-                          {invoice.billToName}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div>
-                        <div className="inline text-sm font-medium text-gray-900">
-                          {invoice.subtotal} {invoice.currency}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div>
-                        <div className="inline text-sm font-medium text-gray-900">
-                          {invoice.total} {invoice.currency}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(invoice.createdAt!).toLocaleDateString("en-GB")}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {invoice.updatedAt
-                      ? new Date(invoice.updatedAt).toLocaleDateString("en-GB")
-                      : 'Never'}
-                  </td>
-                  <td className="px-6 py-4 justify-center whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex items-center justify-end space-x-2">
-
-                      <Link
-                        to={`/invoice/edit/${invoice._id}`}
-                        className="text-indigo-600 hover:text-indigo-900 p-1 rounded transition-colors"
-                        title="Edit Invoice"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Link>
-                                            <Link
-                          to={`/invoice/${invoice._id}`}
-                          target="_blank"
-                        title="Edit Invoice"
-                      >
-                        <Printer className="w-4 h-4" />
-                      </Link>
-
-
-                      <Form
-                        method="post"
-                        className="inline"
-                        onSubmit={(e) => {
-                          if (!confirm('Are you sure you want to delete this invoice?')) {
-                            e.preventDefault();
-                          }
-                        }}
-                      >
-
-                        <input type="hidden" name="_action" value="deleteinvoice" />
-                        <input type="hidden" name="invoiceId" value={invoice._id} />
-                        <button
-                          type="submit"
-                          className="text-red-600 hover:text-red-900 p-1 rounded"
-                          title="Delete Invoice"
+                        
+                        <Link
+                          to={`/invoice/edit/${invoice._id}`}
+                          className="text-indigo-600 hover:text-indigo-900 p-1 rounded transition-colors"
+                          title="Edit Invoice"
                         >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </Form>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                          <Edit className="w-4 h-4" />
+                        </Link>
+                        <Form
+                          method="post"
+                          className="inline"
+                          onSubmit={(e) => {
+                            if (!confirm('Are you sure you want to delete this invoice?')) {
+                              e.preventDefault();
+                            }
+                          }}
+                        >
+                          <input type="hidden" name="_action" value="deleteinvoice" />
+                          <input type="hidden" name="invoiceId" value={invoice._id} />
+                          <button
+                            type="submit"
+                            className="text-red-600 hover:text-red-900 p-1 rounded"
+                            title="Delete Invoice"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </Form>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>

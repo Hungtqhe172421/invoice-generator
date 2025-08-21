@@ -46,7 +46,7 @@ export async function action({ request }: ActionFunctionArgs) {
       success: true
     });
   } catch (error) {
-    return json({ error: 'Forgot password error.' }, { status: 500 });
+    throw new Response( 'Forgot password error.' , { status: 500 });
   }
 }
 

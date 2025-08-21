@@ -24,7 +24,7 @@ export async function action({ request }: ActionFunctionArgs) {
   try {
     await connectToDatabase();
 
-    const user = await User.findOne({ email});
+    const user = await User.findOne({ email });
     if (!user) {
       return json({ error: 'Invalid email or password' }, { status: 401 });
     }
@@ -41,7 +41,7 @@ export async function action({ request }: ActionFunctionArgs) {
       }, { status: 403 });
     }
 
-     if (!user.isActive) {
+    if (!user.isActive) {
       return json({ error: 'Your account has been deactivated.' }, { status: 401 });
     }
 
@@ -56,7 +56,6 @@ export async function action({ request }: ActionFunctionArgs) {
       }
     });
   } catch (error) {
-    console.error("Sign in error:", error);
     return json({ error: 'An error occurred during sign in' }, { status: 500 });
   }
 

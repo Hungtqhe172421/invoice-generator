@@ -120,7 +120,7 @@ export default function SettingsPage({ initialData }: SettingsFormProps) {
                 disabled={isSubmitting}
                 form="settings-form"
               >
-                {isSubmitting ? "Saving ..." : "Save Invoice"}
+                {isSubmitting ? "Saving ..." : "Save Setting"}
               </button>
             </div>
           </div>

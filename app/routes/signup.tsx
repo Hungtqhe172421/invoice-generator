@@ -1,9 +1,9 @@
 
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
 import { Form, Link, useActionData, useNavigation } from '@remix-run/react';
-import { generateToken, getUserFromRequest, hashPassword } from '~/utils/auth.server';
-import { connectToDatabase } from '~/utils/db.server';
 import User from '~/models/user.server';
+import { getUserFromRequest, hashPassword } from '~/utils/auth.server';
+import { connectToDatabase } from '~/utils/db.server';
 import { sendVerificationEmail } from '~/utils/email';
 
 
@@ -41,7 +41,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   try {
     await connectToDatabase();
-    
+
     const existingUser = await User.findOne({
       $or: [{ email }, { username }]
     });
@@ -54,31 +54,31 @@ export async function action({ request }: ActionFunctionArgs) {
         return json({ error: 'Username already exists' }, { status: 400 });
       }
     }
-    
+
     const hashedPassword = await hashPassword(password);
-    
-   const newUser = new User({
+
+    const newUser = new User({
       username,
       email,
       password: hashedPassword,
       role: 'user',
-      isEmailVerified: false, 
-      isActive: false 
+      isEmailVerified: false,
+      isActive: false
     });
 
-        
+
     const verificationToken = newUser.createEmailVerificationToken();
-    
+
     await newUser.save();
 
-    await sendVerificationEmail(email, username, verificationToken).catch(console.error);
+    await sendVerificationEmail(email, username, verificationToken);
 
-    return json({ 
-      success: true, 
+    return json({
+      success: true,
       message: 'Account created successfully! Please verify your account before signing in.',
       email: email
     }, { status: 201 });
-    
+
   } catch (error) {
     return json({ error: 'Sign up failed. Internet error!' }, { status: 500 });
   }
@@ -89,7 +89,7 @@ export default function SignUp() {
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
-if (actionData && 'success' in actionData && actionData.success) {
+  if (actionData && 'success' in actionData && actionData.success) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
@@ -185,20 +185,20 @@ if (actionData && 'success' in actionData && actionData.success) {
             </div>
           </div>
 
-          {actionData && 'error' in actionData &&  (
+          {actionData && 'error' in actionData && (
             <div className="text-red-600 text-sm text-center">
               {actionData.error}
             </div>
           )}
 
           <div>
-<button
-    type="submit"
-    disabled={isSubmitting}
-    className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-  >
-    {isSubmitting ? "Signing up..." : "Sign up"}
-  </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            >
+              {isSubmitting ? "Signing up..." : "Sign up"}
+            </button>
           </div>
 
           <div className="text-center">

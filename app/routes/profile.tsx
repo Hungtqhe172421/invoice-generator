@@ -1,7 +1,7 @@
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
 import { Form, useActionData, useLoaderData, useNavigation } from '@remix-run/react';
 import User from '~/models/user.server';
-import { getUserFromRequest, hashPassword, verifyPassword } from '~/utils/auth.server';
+import { getUserFromRequest } from '~/utils/auth.server';
 import { connectToDatabase } from '~/utils/db.server';
 
 
@@ -14,16 +14,18 @@ export async function loader({ request }: LoaderFunctionArgs) {
   await connectToDatabase();
   const user = await User.findById(authUser.userId);
 
-  return json({ user: {
-    _id: user._id,
-    username: user.username,
-    email: user.email,
-    firstName: user.firstName || '',
-    lastName: user.lastName || '',
-    role: user.role,
-    createdAt: user.createdAt,
-    lastLogin: user.lastLogin
-  }});
+  return json({
+    user: {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      firstName: user.firstName || '',
+      lastName: user.lastName || '',
+      role: user.role,
+      createdAt: user.createdAt,
+      lastLogin: user.lastLogin
+    }
+  });
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -37,7 +39,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   await connectToDatabase();
   const user = await User.findById(authUser.userId);
-  
+
   if (!user) {
     return redirect('/signin');
   }
@@ -99,10 +101,10 @@ export default function Profile() {
 
       <div >
         <div className="bg-white shadow rounded-lg p-6">
-          
+
           <Form method="post" className="space-y-4">
             <input type="hidden" name="_action" value="updateProfile" />
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
@@ -116,7 +118,7 @@ export default function Profile() {
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                 />
               </div>
-              
+
               <div>
                 <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
                   Last Name
@@ -172,7 +174,7 @@ export default function Profile() {
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
               disabled={isSubmitting}
             >
-             {isSubmitting ? "Updating ..." : "Update Profile"}
+              {isSubmitting ? "Updating ..." : "Update Profile"}
             </button>
           </Form>
         </div>

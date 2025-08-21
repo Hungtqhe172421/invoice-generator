@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import { Form, json, Link, redirect, useLoaderData } from '@remix-run/react';
+import { Form, json, Link, redirect, useLoaderData, useNavigation } from '@remix-run/react';
 import { Invoice, InvoiceData } from '~/models/invoice';
 import { LoaderFunctionArgs } from '@remix-run/node';
 import { connectToDatabase } from '~/utils/db.server';
 import { getUserFromRequest } from '~/utils/auth.server';
 import { invoiceTemplates } from '~/components/Template';
+import { SkeletonRow } from '~/utils/skeleton';
+import { formatCurrency } from '~/utils/format';
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const authUser = getUserFromRequest(request);
-  if (!authUser || authUser.role !== 'admin') {
-    return redirect('/');
-  }
+
   const url = new URL(request.url);
   const page = parseInt(url.searchParams.get('page') || '1');
   const limit = 10;
@@ -125,7 +124,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function InvoiceManagement() {
   const { invoices, pagination, filters, sorting } = useLoaderData<typeof loader>();
   const [jumpPage, setJumpPage] = useState('');
+  const navigation = useNavigation();
 
+  const isLoading = navigation.state === "loading"
   const getSortIcon = (column: string) => {
     if (sorting.sortBy !== column) {
       return (
@@ -264,79 +265,81 @@ export default function InvoiceManagement() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {invoices.map((invoice: any) => (
-                <tr key={invoice._id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div>
-                        <Link
-                          to={`/admin/users?search=${invoice.username}`}
-                          className="inline text-sm font-medium text-indigo-600 hover:text-indigo-900"
-                        >
-                          {invoice.username}
-                        </Link>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div>
-                        <Link
-                          to={`/invoice/${invoice._id}`}
-                          target="_blank"
-                          className="inline text-sm font-medium text-indigo-600 hover:text-indigo-900"
-                        >
-                          {invoice.invoiceNumber}
-                        </Link>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div>
-                        <div className="inline text-sm font-medium text-gray-900">
-                          {invoice.title}
+              {isLoading
+                ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+                : invoices.map((invoice: any) => (
+                  <tr key={invoice._id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div>
+                          <Link
+                            to={`/admin/users?search=${invoice.username}`}
+                            className="inline text-sm font-medium text-indigo-600 hover:text-indigo-900"
+                          >
+                            {invoice.username}
+                          </Link>
                         </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div>
-                        <div className="inline text-sm font-medium text-gray-900">
-                          {invoice.fromName}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div>
+                          <Link
+                            to={`/invoice/${invoice._id}`}
+                            target="_blank"
+                            className="inline text-sm font-medium text-indigo-600 hover:text-indigo-900"
+                          >
+                            {invoice.invoiceNumber}
+                          </Link>
                         </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div>
-                        <div className="inline text-sm font-medium text-gray-900">
-                          {invoice.billToName}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div>
+                          <div className="inline text-sm font-medium text-gray-900">
+                            {invoice.title}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div>
-                        <div className="inline text-sm font-medium text-gray-900">
-                          {invoice.total} {invoice.currency}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div>
+                          <div className="inline text-sm font-medium text-gray-900">
+                            {invoice.fromName}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(invoice.createdAt!).toLocaleDateString("en-GB")}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {invoice.updatedAt
-                      ? new Date(invoice.updatedAt).toLocaleDateString("en-GB")
-                      : 'Never'}
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div>
+                          <div className="inline text-sm font-medium text-gray-900">
+                            {invoice.billToName}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex justify-end">
+                        <div>
+                          <div className="inline text-sm font-medium text-gray-900">
+                            {formatCurrency(invoice.total, invoice.currency)}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {new Date(invoice.createdAt!).toLocaleDateString("en-GB")}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {invoice.updatedAt
+                        ? new Date(invoice.updatedAt).toLocaleDateString("en-GB")
+                        : 'Never'}
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>

@@ -1,10 +1,11 @@
 import { json, redirect, type ActionFunctionArgs, type LoaderFunctionArgs } from '@remix-run/node';
 import { Form, useActionData, useLoaderData, useNavigation, Link } from '@remix-run/react';
-import {  Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import User, { deleteUserWithInvoices, IUser } from '~/models/user.server';
 import { getUserFromRequest } from '~/utils/auth.server';
 import { connectToDatabase } from '~/utils/db.server';
+import { SkeletonRow } from '~/utils/skeleton';
 
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -132,7 +133,10 @@ export async function action({ request }: ActionFunctionArgs) {
 export default function AdminUsers() {
     const { users, pagination, filters, sorting, authUserId } = useLoaderData<typeof loader>();
     const actionData = useActionData<typeof action>();
+    const navigation = useNavigation();
     const [jumpPage, setJumpPage] = useState('');
+
+    const isLoading = navigation.state === "loading";
 
     const getSortIcon = (column: string) => {
         if (sorting.sortBy !== column) {
@@ -161,6 +165,9 @@ export default function AdminUsers() {
         if (filters.search) params.set('search', filters.search);
         return `?${params.toString()}`;
     };
+
+    
+
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
@@ -270,112 +277,114 @@ export default function AdminUsers() {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {users.map((user: IUser) => (
-                                <tr key={user._id}>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center">
-                                            <div>
-                                                <div className="text-sm font-medium text-gray-900">
-                                                    {user.username}
-                                                </div>
-                                                <div className="text-sm text-gray-500">{user.firstName} {user.lastName}</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center">
-                                            <div>
-                                                <div className="inline text-sm font-medium text-gray-900">
-                                                    {user.email}
+                            {isLoading
+                                ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+                                : users.map((user: IUser) => (
+                                    <tr key={user._id}>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex items-center">
+                                                <div>
+                                                    <div className="text-sm font-medium text-gray-900">
+                                                        {user.username}
+                                                    </div>
+                                                    <div className="text-sm text-gray-500">{user.firstName} {user.lastName}</div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </td>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="flex items-center">
+                                                <div>
+                                                    <div className="inline text-sm font-medium text-gray-900">
+                                                        {user.email}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
 
-                                    <td className="px-6 py-4">
-                                        <Form method="post" >
-                                            <input type="hidden" name="_action" value="changeRole" />
-                                            <input type="hidden" name="userId" value={user._id} />
+                                        <td className="px-6 py-4">
+                                            <Form method="post" >
+                                                <input type="hidden" name="_action" value="changeRole" />
+                                                <input type="hidden" name="userId" value={user._id} />
 
-                                            {user._id === authUserId ? (
-                                                <span className="inline-flex justify-right text-sm font-medium text-gray-900">
-                                                    Admin
-                                                </span>
-                                            ) : (
-                                                <select
-                                                    name="role"
-                                                    defaultValue={user.role}
-                                                    onChange={(e) => e.target.closest('form')?.requestSubmit()}
-                                                    className="inline-flex justify-center text-sm font-medium text-gray-900"
-                                                >
-                                                    <option value="user">User</option>
-                                                    <option value="admin">Admin</option>
-                                                </select>
-                                            )}
-                                        </Form>
-                                    </td>
+                                                {user._id === authUserId ? (
+                                                    <span className="inline-flex justify-right text-sm font-medium text-gray-900">
+                                                        Admin
+                                                    </span>
+                                                ) : (
+                                                    <select
+                                                        name="role"
+                                                        defaultValue={user.role}
+                                                        onChange={(e) => e.target.closest('form')?.requestSubmit()}
+                                                        className="inline-flex justify-center text-sm font-medium text-gray-900"
+                                                    >
+                                                        <option value="user">User</option>
+                                                        <option value="admin">Admin</option>
+                                                    </select>
+                                                )}
+                                            </Form>
+                                        </td>
 
 
 
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <Form method="post" className="inline">
-                                            <input type="hidden" name="_action" value="toggleStatus" />
-                                            <input type="hidden" name="userId" value={user._id} />
-                                            {user._id === authUserId ? (
-                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Activate
-                                                </span>
-                                            ) : (
-                                                <select
-                                                    name="Active"
-                                                    defaultValue={user.isActive ? 'active' : 'inactive'}
-                                                    onChange={(e) => e.target.closest('form')?.requestSubmit()}
-                                                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.isActive
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : 'bg-red-100 text-red-800'
-                                                        }`}
-                                                >
-                                                    <option value="active">Activate</option>
-                                                    <option value="inactive">Inactive</option>
-                                                </select>
-                                            )}
-                                        </Form>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {new Date(user.createdAt!).toLocaleDateString("en-GB")}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {user.lastLogin
-                                            ? new Date(user.lastLogin).toLocaleDateString("en-GB")
-                                            : 'Never'}
-                                    </td>
-                                    <td className="px-6 py-4 justify-center whitespace-nowrap text-right text-sm font-medium space-x-2">
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <Form method="post" className="inline">
+                                                <input type="hidden" name="_action" value="toggleStatus" />
+                                                <input type="hidden" name="userId" value={user._id} />
+                                                {user._id === authUserId ? (
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Activate
+                                                    </span>
+                                                ) : (
+                                                    <select
+                                                        name="Active"
+                                                        defaultValue={user.isActive ? 'active' : 'inactive'}
+                                                        onChange={(e) => e.target.closest('form')?.requestSubmit()}
+                                                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.isActive
+                                                            ? 'bg-green-100 text-green-800'
+                                                            : 'bg-red-100 text-red-800'
+                                                            }`}
+                                                    >
+                                                        <option value="active">Activate</option>
+                                                        <option value="inactive">Inactive</option>
+                                                    </select>
+                                                )}
+                                            </Form>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {new Date(user.createdAt!).toLocaleDateString("en-GB")}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {user.lastLogin
+                                                ? new Date(user.lastLogin).toLocaleDateString("en-GB")
+                                                : 'Never'}
+                                        </td>
+                                        <td className="px-6 py-4 justify-center whitespace-nowrap text-right text-sm font-medium space-x-2">
 
-                                        <Form
-                                            method="post"
-                                            className="inline"
-                                            onSubmit={(e) => {
-                                                if (!confirm('Are you sure you want to delete this user? Their invoices will also be deleted')) {
-                                                    e.preventDefault();
-                                                }
-                                            }}
-                                        >
-                                            <input type="hidden" name="_action" value="deleteUser" />
-                                            <input type="hidden" name="userId" value={user._id} />
+                                            <Form
+                                                method="post"
+                                                className="inline"
+                                                onSubmit={(e) => {
+                                                    if (!confirm('Are you sure you want to delete this user? Their invoices will also be deleted')) {
+                                                        e.preventDefault();
+                                                    }
+                                                }}
+                                            >
+                                                <input type="hidden" name="_action" value="deleteUser" />
+                                                <input type="hidden" name="userId" value={user._id} />
 
-                                            {user._id === authUserId ? (
-                                                <span></span>
-                                            ) : (
-                                                <button
-                                                    type="submit"
-                                                    className="text-red-600 hover:text-red-900 w-8 h-8"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                            )}
-                                        </Form>
-                                    </td>
-                                </tr>
-                            ))}
+                                                {user._id === authUserId ? (
+                                                    <span></span>
+                                                ) : (
+                                                    <button
+                                                        type="submit"
+                                                        className="text-red-600 hover:text-red-900 w-8 h-8"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                )}
+                                            </Form>
+                                        </td>
+                                    </tr>
+                                ))}
                         </tbody>
                     </table>
                 </div>

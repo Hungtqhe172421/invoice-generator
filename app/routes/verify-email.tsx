@@ -1,6 +1,6 @@
 // app/routes/verify-email.tsx
 import { json, redirect, type LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, Link } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import User from "~/models/user.server";
 import { getUserFromRequest } from "~/utils/auth.server";
 import { connectToDatabase } from "~/utils/db.server";
@@ -12,7 +12,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const token = url.searchParams.get('token');
   const email = url.searchParams.get('email');
 
-const user = getUserFromRequest(request);
+  const user = getUserFromRequest(request);
   if (user) {
     return redirect(url.pathname + url.search, {
       headers: {
@@ -22,15 +22,15 @@ const user = getUserFromRequest(request);
   }
 
   if (!token || !email) {
-    return json({ 
-      success: false, 
-      error: 'Invalid verification link' 
+    return json({
+      success: false,
+      error: 'Invalid verification link'
     }, { status: 400 });
   }
 
   try {
     await connectToDatabase();
-    
+
     const user = await User.findOne({
       email: decodeURIComponent(email),
       emailVerificationToken: token,
@@ -38,15 +38,15 @@ const user = getUserFromRequest(request);
     });
 
     if (!user) {
-      return json({ 
-        success: false, 
-        error: 'Invalid user or verification token expired' 
+      return json({
+        success: false,
+        error: 'Invalid user or verification token expired'
       }, { status: 400 });
     }
 
     if (user.isEmailVerified) {
-      return json({ 
-        success: true, 
+      return json({
+        success: true,
         message: 'Your email has already been verified',
         alreadyVerified: true
       });
@@ -56,21 +56,21 @@ const user = getUserFromRequest(request);
     user.isActive = true;
     user.emailVerificationToken = undefined;
     user.emailVerificationExpires = undefined;
-    
+
     await user.save();
 
-    await sendWelcomeEmail(user.email, user.username).catch(console.error);
+    await sendWelcomeEmail(user.email, user.username);
 
-    return json({ 
-      success: true, 
+    return json({
+      success: true,
       message: 'Email verified successfully! Your account is now active. You can sign in.',
       username: user.username
     });
 
   } catch (error) {
-    return json({ 
-      success: false, 
-      error: 'An error occurred during email verification' 
+    return json({
+      success: false,
+      error: 'An error occurred during email verification'
     }, { status: 500 });
   }
 }
@@ -115,8 +115,8 @@ export default function VerifyEmail() {
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Verification Failed
           </h2>
-          
-        {data && 'error' in data &&  (
+
+          {data && 'error' in data && (
             <div className="text-red-600 text-sm text-center">
               {data.error}
             </div>
