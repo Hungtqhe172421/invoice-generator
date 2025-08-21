@@ -5,7 +5,7 @@ import { useState } from 'react';
 import User, { deleteUserWithInvoices, IUser } from '~/models/user.server';
 import { getUserFromRequest } from '~/utils/auth.server';
 import { connectToDatabase } from '~/utils/db.server';
-import { SkeletonRow } from '~/utils/skeleton';
+import SkeletonRow from '~/utils/skeleton';
 
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -278,7 +278,7 @@ export default function AdminUsers() {
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                             {isLoading
-                                ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+                                ? Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} columns={7}/>)
                                 : users.map((user: IUser) => (
                                     <tr key={user._id}>
                                         <td className="px-6 py-4 whitespace-nowrap">

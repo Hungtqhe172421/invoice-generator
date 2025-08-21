@@ -6,7 +6,7 @@ import { Invoice } from '~/models/invoice';
 import { getUserFromRequest } from '~/utils/auth.server';
 import { connectToDatabase } from '~/utils/db.server';
 import { formatCurrency } from '~/utils/format';
-import { SkeletonRow } from '~/utils/skeleton';
+import SkeletonRow from '~/utils/skeleton';
 
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -315,7 +315,7 @@ export default function InvoiceManagement() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {isLoading
-                ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+                ? Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} columns={9}/>)
                 : invoices.map((invoice: any) => (
                   <tr key={invoice._id}>
                     <td className="px-6 py-4 whitespace-nowrap">

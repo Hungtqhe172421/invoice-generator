@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Form, json, Link, redirect, useLoaderData, useNavigation } from '@remix-run/react';
-import { Invoice, InvoiceData } from '~/models/invoice';
 import { LoaderFunctionArgs } from '@remix-run/node';
+import { Form, json, Link, useLoaderData, useNavigation } from '@remix-run/react';
+import { useState } from 'react';
+import { Invoice } from '~/models/invoice';
 import { connectToDatabase } from '~/utils/db.server';
-import { getUserFromRequest } from '~/utils/auth.server';
-import { invoiceTemplates } from '~/components/Template';
-import { SkeletonRow } from '~/utils/skeleton';
 import { formatCurrency } from '~/utils/format';
+import SkeletonRow from '~/utils/skeleton';
 
 export async function loader({ request }: LoaderFunctionArgs) {
 
@@ -125,14 +123,8 @@ export default function InvoiceManagement() {
   const { invoices, pagination, filters, sorting } = useLoaderData<typeof loader>();
   const [jumpPage, setJumpPage] = useState('');
   const navigation = useNavigation();
-    const [mounted, setMounted] = useState(false);
 
-  const isLoading = navigation.state === "loading"|| !mounted;
-
-    useEffect(() => {
-    setMounted(true);
-  }, []);
-
+  const isLoading = navigation.state === "loading"
   const getSortIcon = (column: string) => {
     if (sorting.sortBy !== column) {
       return (
@@ -272,7 +264,7 @@ export default function InvoiceManagement() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {isLoading
-                ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+                ? Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} columns={8}/>)
                 : invoices.map((invoice: any) => (
                   <tr key={invoice._id}>
                     <td className="px-6 py-4 whitespace-nowrap">
