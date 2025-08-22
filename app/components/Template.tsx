@@ -113,7 +113,7 @@ const classicStyles = StyleSheet.create({
   companyName: { fontSize: 18, fontWeight: "bold" },
   companyDetails: { marginTop: 5, fontSize: 11, lineHeight: 1.3 },
   label: { fontWeight: "bold" },
-  logo: { width: 160, height: 80, objectFit: "contain" },
+  logo: { width: 120, alignSelf: "flex-start" , objectFit: "contain"},
 
   clientSection: {
     flexDirection: "row",
@@ -339,11 +339,11 @@ const sharpStyles = StyleSheet.create({
     paddingBottom: 20,
     marginBottom: 20,
   },
-  companyInfo: { maxWidth: "60%" },
+  companyInfo: { maxWidth: "60%",paddingLeft:20 },
   companyName: { fontSize: 18, fontWeight: "bold" },
   companyDetails: { marginTop: 5, fontSize: 11, lineHeight: 1.3 },
   label: { fontWeight: "bold" },
-  logo: { width: 160, height: 80, objectFit: "contain" },
+  logo: { width: 120, alignSelf: "flex-start" , objectFit: "contain"},
 
   clientSection: {
     flexDirection: "row",
@@ -570,11 +570,11 @@ const cleanStyles = StyleSheet.create({
     paddingBottom: 20,
     marginBottom: 20,
   },
-  companyInfo: { maxWidth: "60%" },
+  companyInfo: { maxWidth: "60%",paddingRight:60 },
   companyName: { fontSize: 18, fontWeight: "bold" },
   companyDetails: { marginTop: 5, fontSize: 11, lineHeight: 1.3 },
   label: { fontWeight: "bold" },
-  logo: { width: 160, height: 80, objectFit: "contain" },
+  logo: { width: 120, alignSelf: "flex-start" , objectFit: "contain"},
 
   clientSection: {
     flexDirection: "row",
@@ -800,11 +800,11 @@ const defaultStyles = StyleSheet.create({
     paddingBottom: 20,
     marginBottom: 20,
   },
-  companyInfo: { maxWidth: "60%" },
+  companyInfo: { maxWidth: "60%",paddingRight:60 },
   companyName: { fontSize: 18, fontWeight: "bold" },
   companyDetails: { marginTop: 5, fontSize: 11, lineHeight: 1.3 },
   label: { fontWeight: "bold" },
-  logo: { width: 160, height: 80, objectFit: "contain" },
+  logo: { width: 120, alignSelf: "flex-start" , objectFit: "contain"},
 
   clientSection: {
     flexDirection: "row",
