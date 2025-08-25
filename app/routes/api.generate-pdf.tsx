@@ -9,12 +9,10 @@ export async function action({ request }: ActionFunctionArgs) {
   const isLocal = !process.env.AWS_REGION;
 
   const browser = await puppeteer.launch({
-    args: isLocal ? [] : chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath: isLocal
-      ? process.env.CHROME_EXECUTABLE_PATH || "/usr/bin/google-chrome"
-      : await chromium.executablePath,
+    args: chromium.args,
+    executablePath: await chromium.executablePath, // ✅ use prebuilt Chromium
     headless: chromium.headless,
+    ignoreHTTPSErrors: true,
   });
 
   const page = await browser.newPage();
