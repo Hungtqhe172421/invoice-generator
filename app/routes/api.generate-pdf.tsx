@@ -5,13 +5,19 @@ import puppeteer from "puppeteer-core";
 export async function action({ request }: ActionFunctionArgs) {
   const body = await request.json();
   const { html } = body;
+const isVercel = !!process.env.VERCEL;
 
-  // Launch serverless-compatible Chromium
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    executablePath: await chromium.executablePath(),
-    headless: true,
-  });
+  const browser = await (isVercel
+    ? puppeteer.launch({
+        args: chromium.args,
+        executablePath: await chromium.executablePath(),
+        headless: true,
+      })
+    : 
+      (await import("puppeteer")).default.launch({
+        headless: true,
+      }));
+
 
   const page = await browser.newPage();
   await page.setContent(html, { waitUntil: "networkidle0" });
