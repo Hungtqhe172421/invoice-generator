@@ -9,6 +9,7 @@ import { invoiceTemplates, TemplateSelector } from './Template';
 import CurrencySelector from './CurrencySelector';
 import { pdf } from '@react-pdf/renderer';
 import { formatCurrency } from '~/utils/format';
+import ReactDOMServer from "react-dom/server";
 
 interface InvoiceFormProps {
   initialData?: Partial<InvoiceData>;
@@ -202,14 +203,17 @@ export default function InvoiceForm({ initialData,invoiceNumber }: InvoiceFormPr
         return;
       }
 
-const TemplateComponent = template.component;
+const html = template.generateHTML(updatedFormData, items);
 
-    const blob = await pdf(
-      <TemplateComponent formData={updatedFormData} items={items} />
-    ).toBlob();
+const response = await fetch("/api/generate-pdf", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ html }),
+});
 
-    const url = URL.createObjectURL(blob);
-    window.open(url);
+const blob = await response.blob();
+const url = URL.createObjectURL(blob);
+window.open(url);
   } catch {
     setSaveStatus({ type: "error", message: "Failed to generate PDF" });
   }

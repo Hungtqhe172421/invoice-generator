@@ -6,7 +6,7 @@
     "**/.server/**/*.tsx",
     "**/.client/**/*.ts",
     "**/.client/**/*.tsx"
-, "app/models/invoice.ts", "app/utils/skeleton.tsx"  ],
+, "app/models/invoice.ts", "app/utils/skeleton.tsx", "app/routes/api.generate-pdf.tsx"  ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "types": ["@remix-run/node", "vite/client"],
