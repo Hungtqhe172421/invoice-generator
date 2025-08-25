@@ -45,12 +45,15 @@ export default function InvoicePDFPage() {
       const template = invoiceTemplates.find((t) => t.name === invoice.template);
       if (!template) return;
 
-      const TemplateComponent = template.component;
+      const html = template.generateHTML(invoice, invoice.items);
 
-      const blob = await pdf(
-        <TemplateComponent formData={invoice} items={invoice.items || []} />
-      ).toBlob();
+      const response = await fetch("/api/generate-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ html }),
+      });
 
+      const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       setPdfUrl(url);
     };
